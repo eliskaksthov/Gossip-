@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -6,108 +7,254 @@
     <title>THE LIST</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
+        /* =============================================
+           PROMĚNNÉ BAREV A ZÁKLADNÍ NASTAVENÍ
+           Tady si můžeš měnit celkový vzhled aplikace.
+           ============================================= */
         :root { 
             --bg: #080808; 
             --surface: #111111; 
-            --accent: #ff2d55; 
+            --accent: #ff2d55;     /* Červená barva pro důraz */
+            --accent-good: #30d158; /* Zelená barva pro pochvaly */
             --text: #ffffff; 
             --muted: #555; 
             --border: #222; 
         }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'DM Sans', sans-serif; 
-            background-color: var(--bg);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-attachment: fixed;
-            background-size: cover;
-            color: var(--text); 
-            min-height: 100vh; 
-            transition: background 0.3s ease;
-        }
 
-        /* Navigace / Header */
-        .header { 
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100; 
-            background: rgba(8,8,8,0.85); backdrop-filter: blur(15px); 
-            border-bottom: 1px solid var(--border); 
-            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; 
-        }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--accent); }
-        
-        .nav-toggle { font-size: 28px; cursor: pointer; color: white; background: none; border: none; }
-        
-        /* Hamburger Menu */
-        .menu { 
-            display: none; position: fixed; top: 60px; right: 20px; 
-            background: var(--surface); border: 1px solid var(--border); 
-            border-radius: 12px; padding: 10px; z-index: 1000; 
-            flex-direction: column; gap: 5px; min-width: 180px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .menu.active { display: flex; }
-        .menu button { 
-            background: none; border: none; color: white; padding: 12px 15px; 
-            text-align: left; cursor: pointer; font-family: 'Bebas Neue', sans-serif; 
-            font-size: 18px; border-radius: 8px; transition: 0.2s;
-        }
-        .menu button:hover { background: var(--border); color: var(--accent); }
+```
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { 
+        font-family: 'DM Sans', sans-serif; 
+        background-color: var(--bg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        background-size: cover;
+        color: var(--text); 
+        min-height: 100vh; 
+        transition: background 0.3s ease;
+    }
 
-        /* Hlavní obsah */
-        .content { padding: 80px 20px 150px; max-width: 500px; margin: auto; }
-        .section { display: none; animation: fadeIn 0.4s ease; }
-        .section.active { display: block; }
+    /* =============================================
+       HORNÍ NAVIGAČNÍ LIŠTA (HEADER)
+       Zůstane vždy nahoře při scrollování.
+       ============================================= */
+    .header { 
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100; 
+        background: rgba(8,8,8,0.85); backdrop-filter: blur(15px); 
+        border-bottom: 1px solid var(--border); 
+        padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--accent); }
+    .nav-toggle { font-size: 28px; cursor: pointer; color: white; background: none; border: none; }
+    
+    /* =============================================
+       HAMBURGER MENU (☰)
+       Otevírá se po kliknutí na tři čárky.
+       ============================================= */
+    .menu { 
+        display: none; position: fixed; top: 60px; right: 20px; 
+        background: var(--surface); border: 1px solid var(--border); 
+        border-radius: 12px; padding: 10px; z-index: 1000; 
+        flex-direction: column; gap: 5px; min-width: 180px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .menu.active { display: flex; }
+    .menu button { 
+        background: none; border: none; color: white; padding: 12px 15px; 
+        text-align: left; cursor: pointer; font-family: 'Bebas Neue', sans-serif; 
+        font-size: 18px; border-radius: 8px; transition: 0.2s;
+    }
+    .menu button:hover { background: var(--border); color: var(--accent); }
 
-        /* Karty s drby */
-        .card { 
-            background: rgba(17, 17, 17, 0.8); backdrop-filter: blur(10px); 
-            border: 1px solid var(--border); border-radius: 15px; 
-            padding: 15px; margin-bottom: 15px; 
-        }
-        .gossip-img { width: 100%; border-radius: 10px; margin: 10px 0; display: block; }
-        .person { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-        
-        /* Ranking */
-        .rank-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; background: rgba(255,255,255,0.05); 
-            border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--accent); 
-        }
+    /* =============================================
+       HLAVNÍ OBLAST OBSAHU
+       Sem se vykreslují karty s drby, ranking atd.
+       ============================================= */
+    .content { padding: 80px 20px 150px; max-width: 500px; margin: auto; }
+    .section { display: none; animation: fadeIn 0.4s ease; }
+    .section.active { display: block; }
 
-        /* Input Area (Spodní lišta) */
-        .input-area { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: rgba(0,0,0,0.9); border-top: 1px solid var(--border); 
-            padding: 15px; z-index: 101; backdrop-filter: blur(10px);
-        }
-        .input-container { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 8px; }
-        input { 
-            background: var(--surface); border: 1px solid var(--border); 
-            color: white; padding: 12px; border-radius: 10px; outline: none; 
-        }
-        .post-btn { 
-            background: var(--accent); color: white; border: none; 
-            padding: 12px; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; 
-            cursor: pointer; font-size: 18px; letter-spacing: 1px;
-        }
+    /* =============================================
+       KARTA S DRBEM
+       Každý drb je jedna karta.
+       ============================================= */
+    .card { 
+        background: rgba(17, 17, 17, 0.8); backdrop-filter: blur(10px); 
+        border: 1px solid var(--border); border-radius: 15px; 
+        padding: 15px; margin-bottom: 15px; 
+    }
 
-        /* Skrytí věcí pro adminy */
-        .admin-only { display: none !important; }
-        body.is-admin .admin-only { display: block !important; }
-        body.is-admin #loginBtn { display: none !important; }
+    /* =============================================
+       OBRÁZEK V KARTĚ — OPRAVENO
+       object-fit: cover zajistí, že fotka nebude
+       roztažená ani rozmazaná. max-height omezí
+       výšku na 400px, aby nezabírala celou obrazovku.
+       ============================================= */
+    .gossip-img { 
+        width: 100%; 
+        max-height: 400px;
+        object-fit: cover;     /* <-- KLÍČOVÁ OPRAVA: ořízne fotku správně místo roztažení */
+        object-position: center top; /* Ořez začíná shora (kde bývají tváře) */
+        border-radius: 10px; 
+        margin: 10px 0; 
+        display: block; 
+    }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    .person { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+    
+    /* =============================================
+       TYP DRBU — POMLUVA vs. POCHVALA
+       Každý příspěvek má záložku, která říká,
+       o jaký typ jde. Ovlivňuje ranking.
+       ============================================= */
+    .type-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .type-badge.gossip { background: rgba(255, 45, 85, 0.15); color: var(--accent); border: 1px solid rgba(255,45,85,0.3); }
+    .type-badge.praise { background: rgba(48, 209, 88, 0.15); color: var(--accent-good); border: 1px solid rgba(48,209,88,0.3); }
+
+    /* =============================================
+       RANKING — HALL OF FAME & SHAME
+       5 lidí seřazených podle skóre.
+       Skóre = pochvaly - pomluvy (každý like = +1/-1)
+       ============================================= */
+    .ranking-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+    .rank-item { 
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 15px; background: rgba(255,255,255,0.05); 
+        border-radius: 10px; margin-bottom: 8px;
+    }
+    /* Barva levého okraje rankingu závisí na skóre */
+    .rank-item.positive { border-left: 4px solid var(--accent-good); }
+    .rank-item.negative { border-left: 4px solid var(--accent); }
+    .rank-item.neutral  { border-left: 4px solid var(--muted); }
+
+    .rank-position { 
+        font-family: 'Bebas Neue', sans-serif; 
+        font-size: 28px; 
+        color: var(--muted); 
+        margin-right: 12px; 
+        min-width: 30px;
+    }
+    .rank-score { 
+        font-weight: bold; 
+        font-size: 18px; 
+        text-align: right;
+        min-width: 60px;
+    }
+    .rank-score.pos { color: var(--accent-good); }
+    .rank-score.neg { color: var(--accent); }
+
+    /* =============================================
+       PŘIHLAŠOVACÍ FORMULÁŘ (ADMIN)
+       Zobrazí se po kliknutí na 🔑 PŘIHLÁŠENÍ.
+       ============================================= */
+    .login-input {
+        margin-bottom: 10px;
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+        outline: none;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    /* =============================================
+       ADMIN PANEL
+       Vidí ho jen přihlášený admin (třída is-admin).
+       ============================================= */
+    .admin-only { display: none !important; }
+    body.is-admin .admin-only { display: block !important; }
+    body.is-admin #loginBtn { display: none !important; }
+
+    /* =============================================
+       SPODNÍ LIŠTA PRO PSANÍ DRBŮ
+       Zůstane vždy dole na obrazovce.
+       ============================================= */
+    .input-area { 
+        position: fixed; bottom: 0; left: 0; right: 0; 
+        background: rgba(0,0,0,0.9); border-top: 1px solid var(--border); 
+        padding: 15px; z-index: 101; backdrop-filter: blur(10px);
+    }
+    .input-container { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 8px; }
+    
+    input[type="text"] { 
+        background: var(--surface); border: 1px solid var(--border); 
+        color: white; padding: 12px; border-radius: 10px; outline: none;
+        font-family: 'DM Sans', sans-serif;
+        width: 100%;
+    }
+
+    /* =============================================
+       VÝBĚR TYPU — POMLUVA nebo POCHVALA
+       Radio tlačítka ve spodní liště.
+       ============================================= */
+    .type-selector {
+        display: flex;
+        gap: 8px;
+    }
+    .type-btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--muted);
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 15px;
+        text-align: center;
+        transition: 0.2s;
+    }
+    .type-btn.selected-gossip { background: rgba(255,45,85,0.15); color: var(--accent); border-color: var(--accent); }
+    .type-btn.selected-praise { background: rgba(48,209,88,0.15); color: var(--accent-good); border-color: var(--accent-good); }
+
+    .post-btn { 
+        background: var(--accent); color: white; border: none; 
+        padding: 12px; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; 
+        cursor: pointer; font-size: 18px; letter-spacing: 1px;
+    }
+
+    /* =============================================
+       ANIMACE FADEIN
+       Každá sekce se při přepnutí plynule objeví.
+       ============================================= */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+```
+
 </head>
 <body>
+
+<!-- =============================================
+     HEADER — horní lišta s logem a menu
+     ============================================= -->
 
 <div class="header">
     <div class="logo">THE LIST</div>
     <button class="nav-toggle" onclick="toggleMenu()">☰</button>
 </div>
+
+<!-- =============================================
+     HAMBURGER MENU
+     Zobrazí se po kliknutí na ☰.
+     Admin tlačítka jsou skrytá pro normální uživatele.
+     ============================================= -->
 
 <div class="menu" id="navMenu">
     <button onclick="showSection('feed')">📱 DRBY</button>
@@ -117,53 +264,89 @@
     <button class="admin-only" onclick="logout()" style="color: var(--accent);">🚪 ODHLÁSIT</button>
 </div>
 
+<!-- =============================================
+     HLAVNÍ OBSAH — přepíná se pomocí showSection()
+     ============================================= -->
+
 <div class="content">
-    <div id="feed" class="section active">
-        <div id="gossipFeed">Načítám...</div>
-    </div>
 
-    <div id="ranking" class="section">
-        <h2 style="font-family:'Bebas Neue'; margin-bottom:20px; font-size: 32px;">HALL OF SHAME</h2>
-        <div id="rankingList"></div>
-    </div>
+```
+<!-- FEED — zobrazuje schválené drby -->
+<div id="feed" class="section active">
+    <div id="gossipFeed">Načítám...</div>
+</div>
 
-    <div id="login" class="section">
-        <div class="card">
-            <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">VSTUP PRO ADMINY</h2>
-            <input type="text" id="adminUser" placeholder="Uživatelské jméno" style="margin-bottom: 10px; width: 100%;">
-            <input type="password" id="adminPass" placeholder="Heslo" style="margin-bottom: 15px; width: 100%; background: var(--surface); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 10px;">
-            <button class="post-btn" onclick="handleLogin()" style="width: 100%;">PŘIHLÁSIT</button>
-        </div>
-    </div>
+<!-- RANKING — 5 lidí podle skóre (pochvaly - pomluvy) -->
+<div id="ranking" class="section">
+    <div class="ranking-title">🏆 HALL OF FAME & SHAME</div>
+    <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">
+        Skóre = ❤️ za pochvaly − ❤️ za pomluvy
+    </p>
+    <div id="rankingList"></div>
+</div>
 
-    <div id="admin" class="section admin-only">
-        <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN PANEL</h2>
-        <div class="card">
-            <p style="margin-bottom: 10px;">Změnit dočasně pozadí (jen u tebe):</p>
-            <input type="file" id="bgUpload" accept="image/*" onchange="uploadBackground()">
-        </div>
-        <div id="adminApproveList"></div>
+<!-- LOGIN — admin přihlášení -->
+<div id="login" class="section">
+    <div class="card">
+        <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">VSTUP PRO ADMINY</h2>
+        <input class="login-input" type="text" id="adminUser" placeholder="Uživatelské jméno">
+        <input class="login-input" type="password" id="adminPass" placeholder="Heslo">
+        <button class="post-btn" onclick="handleLogin()" style="width: 100%;">PŘIHLÁSIT</button>
     </div>
 </div>
+
+<!-- ADMIN PANEL — jen pro adminy (třída is-admin) -->
+<div id="admin" class="section admin-only">
+    <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN PANEL</h2>
+    <div class="card">
+        <p style="margin-bottom: 10px;">Změnit dočasně pozadí (jen u tebe):</p>
+        <input type="file" id="bgUpload" accept="image/*" onchange="uploadBackground()">
+    </div>
+    <!-- Sem se vykreslí příspěvky čekající na schválení -->
+    <div id="adminApproveList"></div>
+</div>
+```
+
+</div>
+
+<!-- =============================================
+     SPODNÍ LIŠTA — formulář pro odesílání drbů
+     Zobrazí se jen ve feedu.
+     ============================================= -->
 
 <div class="input-area" id="inputArea">
     <div class="input-container">
         <input type="text" id="personInput" placeholder="O kom to je?">
         <input type="text" id="gossipInput" placeholder="Co se stalo?">
-        <div style="display: flex; gap: 10px;">
-            <label style="background:var(--surface); padding:12px; border-radius:10px; cursor:pointer; flex:1; text-align:center; border:1px solid var(--border); font-size: 14px;">
-                📷 FOTO <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="this.parentElement.innerText='✅ FOTO'">
-            </label>
-            <button class="post-btn" id="postBtn" style="flex:2">POSLAT</button>
-        </div>
+
+```
+    <!-- Výběr: je to pomluva nebo pochvala? -->
+    <div class="type-selector">
+        <button class="type-btn selected-gossip" id="btnGossip" onclick="selectType('gossip')">💀 POMLUVA</button>
+        <button class="type-btn" id="btnPraise" onclick="selectType('praise')">✨ POCHVALA</button>
     </div>
+
+    <div style="display: flex; gap: 10px;">
+        <label style="background:var(--surface); padding:12px; border-radius:10px; cursor:pointer; flex:1; text-align:center; border:1px solid var(--border); font-size: 14px;" id="photoLabel">
+            📷 FOTO
+            <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="document.getElementById('photoLabel').innerText='✅ FOTO'">
+        </label>
+        <button class="post-btn" id="postBtn" style="flex:2">POSLAT</button>
+    </div>
+</div>
+```
+
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// --- KONFIGURACE FIREBASE ---
+// =============================================
+// KONFIGURACE FIREBASE
+// Tady jsou přístupové údaje k tvé databázi.
+// apiKey sem vlož ze svého Firebase projektu.
+// =============================================
 const firebaseConfig = {
     apiKey: "SEM_VLOZ_SVOJE_API",
     authDomain: "the-list-1efde.firebaseapp.com",
@@ -172,19 +355,25 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const gossipRef = ref(db, 'gossip');
+const gossipRef = ref(db, 'gossip'); // Odkaz na "složku" gossip v databázi
 
-// --- ADMIN NASTAVENÍ ---
+// =============================================
+// ADMIN PŘIHLAŠOVÁNÍ
+// Heslo a jméno jsou zatím v kódu (jednoduché).
+// Po správném přihlášení se uloží do localStorage.
+// =============================================
 const ADMIN_USER = "admin"; 
-const ADMIN_PASS = "1234"; // Tady si dejte vlastní heslo
+const ADMIN_PASS = "1234"; // ← ZDE si změň heslo!
 
 window.handleLogin = () => {
     const u = document.getElementById('adminUser').value;
     const p = document.getElementById('adminPass').value;
-    if(u === ADMIN_USER && p === ADMIN_PASS) {
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
         localStorage.setItem('isAdmin', 'true');
         location.reload();
-    } else { alert("Špatné jméno nebo heslo!"); }
+    } else {
+        alert("Špatné jméno nebo heslo!");
+    }
 };
 
 window.logout = () => {
@@ -192,13 +381,18 @@ window.logout = () => {
     location.reload();
 };
 
+// Pokud je uložen admin v localStorage → přidá třídu is-admin na <body>
+// Tato třída odkryje všechna admin-only tlačítka a panely.
 const isAdmin = localStorage.getItem('isAdmin') === 'true';
-if(isAdmin) document.body.classList.add('is-admin');
+if (isAdmin) document.body.classList.add('is-admin');
 
-// --- POZADÍ ---
-const globalDefaultBg = "https://i.ibb.co/1f6f5Hj2/image.png"; 
+// =============================================
+// POZADÍ
+// Buď vlastní (uložené v localStorage), nebo výchozí.
+// =============================================
+const globalDefaultBg = "https://i.ibb.co/1f6f5Hj2/image.png";
 
-window.uploadBackground = function() {
+window.uploadBackground = function () {
     const file = document.getElementById('bgUpload').files[0];
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -211,7 +405,11 @@ window.uploadBackground = function() {
 const savedBg = localStorage.getItem('customBg');
 document.body.style.backgroundImage = `url(${savedBg || globalDefaultBg})`;
 
-// --- NAVIGACE ---
+// =============================================
+// NAVIGACE — přepínání sekcí
+// Schová všechny sekce a zobrazí jen zvolenou.
+// Spodní lišta se zobrazí jen na feedu.
+// =============================================
 window.toggleMenu = () => document.getElementById('navMenu').classList.toggle('active');
 
 window.showSection = (id) => {
@@ -221,16 +419,35 @@ window.showSection = (id) => {
     document.getElementById('inputArea').style.display = (id === 'feed') ? 'block' : 'none';
 };
 
-// --- DATA ---
+// =============================================
+// VÝBĚR TYPU PŘÍSPĚVKU (POMLUVA / POCHVALA)
+// Uloží vybraný typ do proměnné selectedType.
+// Zvýrazní vybrané tlačítko.
+// =============================================
+let selectedType = 'gossip'; // Výchozí: pomluva
+
+window.selectType = (type) => {
+    selectedType = type;
+    document.getElementById('btnGossip').className = 'type-btn' + (type === 'gossip' ? ' selected-gossip' : '');
+    document.getElementById('btnPraise').className = 'type-btn' + (type === 'praise' ? ' selected-praise' : '');
+};
+
+// =============================================
+// ODESLÁNÍ NOVÉHO DRBU
+// Vezme data z formuláře a uloží do Firebase.
+// Příspěvek čeká na schválení (approved: false).
+// Fotka se převede na base64 text pro uložení.
+// =============================================
 document.getElementById('postBtn').onclick = async () => {
-    const text = document.getElementById('gossipInput').value;
+    const text = document.getElementById('gossipInput').value.trim();
     const person = document.getElementById('personInput').value.trim();
     const file = document.getElementById('fileInput').files[0];
 
-    if(!text || !person) return alert("Vyplň jméno i drb!");
+    if (!text || !person) return alert("Vyplň jméno i drb!");
 
     let base64 = "";
     if (file) {
+        // Převod obrázku na base64 text (takto se ukládá do Firebase)
         base64 = await new Promise(res => {
             const reader = new FileReader();
             reader.onload = () => res(reader.result);
@@ -239,53 +456,115 @@ document.getElementById('postBtn').onclick = async () => {
     }
 
     await push(gossipRef, {
-        text, person, image: base64,
+        text,
+        person,
+        image: base64,
+        type: selectedType, // 'gossip' nebo 'praise' — určuje ranking
         time: new Date().toLocaleString('cs-CZ'),
-        approved: false, likes: 0
+        approved: false,    // Admin musí schválit před zobrazením
+        likes: 0
     });
-    alert("Drb byl odeslán ke schválení.");
+
+    alert("Příspěvek byl odeslán ke schválení.");
     location.reload();
 };
 
-window.likePost = (id, cur) => update(ref(db, 'gossip/' + id), { likes: (cur || 0) + 1 });
-window.approvePost = (id) => update(ref(db, 'gossip/' + id), { approved: true });
-window.deletePost = (id) => confirm("Smazat tento drb?") && remove(ref(db, 'gossip/' + id));
+// =============================================
+// INTERAKCE S DATABÁZÍ (LIKE, SCHVÁLENÍ, SMAZÁNÍ)
+// Tyto funkce mění data přímo v Firebase.
+// =============================================
 
-// --- NAČÍTÁNÍ ---
+// Like: přičte 1 k počtu liků daného příspěvku
+window.likePost = (id, cur) => update(ref(db, 'gossip/' + id), { likes: (cur || 0) + 1 });
+
+// Approve: admin schválí příspěvek → zobrazí se ve feedu
+window.approvePost = (id) => update(ref(db, 'gossip/' + id), { approved: true });
+
+// Delete: admin smaže příspěvek (s potvrzením)
+window.deletePost = (id) => confirm("Smazat tento příspěvek?") && remove(ref(db, 'gossip/' + id));
+
+// =============================================
+// NAČÍTÁNÍ DAT Z FIREBASE & VYKRESLENÍ
+// onValue se spustí vždy, když se data změní.
+// Prochází všechny příspěvky a:
+//   1) Zobrazí schválené ve feedu
+//   2) Počítá skóre pro ranking
+//   3) Zobrazí neschválené adminovi ke schválení
+// =============================================
 onValue(gossipRef, (snapshot) => {
     const data = snapshot.val() || {};
+
     const feed = document.getElementById('gossipFeed');
     const rankingDiv = document.getElementById('rankingList');
     const adminDiv = document.getElementById('adminApproveList');
-    
-    feed.innerHTML = ""; 
+
+    feed.innerHTML = "";
     adminDiv.innerHTML = "<h3 style='margin:20px 0 10px; font-family:Bebas Neue; color:var(--accent)'>ČEKÁ NA SCHVÁLENÍ:</h3>";
-    
+
+    // =============================================
+    // RANKING — výpočet skóre
+    // rankData = objekt { jméno: číslo_skóre }
+    // Pochvala s likem = +1 bod
+    // Pomluva s likem = -1 bod
+    // =============================================
     const rankData = {};
 
+    // =============================================
+    // PEVNÝ SEZNAM 5 LIDÍ V RANKINGU
+    // Tady vypiš jména přesně tak, jak je budou
+    // uživatelé zadávat do pole "O kom to je?".
+    // Změn jmeno1–jmeno5 na skutečná jména!
+    // =============================================
+    const RANKED_PEOPLE = ["jmeno1", "jmeno2", "jmeno3", "jmeno4", "jmeno5"];
+
+    // Nastav výchozí skóre 0 pro všech 5 lidí
+    RANKED_PEOPLE.forEach(name => { rankData[name.toLowerCase()] = 0; });
+
+    // Projdi všechny příspěvky
     Object.entries(data).reverse().forEach(([id, item]) => {
-        const pName = item.person.toLowerCase();
-        
-        if(item.approved) {
-            // Počítání do rankingu
-            rankData[pName] = (rankData[pName] || 0) + (item.likes || 0);
-            
-            // Zobrazení ve feedu
+        const pName = item.person?.toLowerCase() || "";
+        const likes = item.likes || 0;
+
+        if (item.approved) {
+
+            // --- VÝPOČET SKÓRE PRO RANKING ---
+            // Pokud je osoba v seznamu RANKED_PEOPLE, přičti/odečti body
+            if (rankData.hasOwnProperty(pName)) {
+                if (item.type === 'praise') {
+                    rankData[pName] += likes;  // Pochvala přidává body
+                } else {
+                    rankData[pName] -= likes;  // Pomluva ubírá body
+                }
+            }
+
+            // --- ZOBRAZENÍ VE FEEDU ---
+            const isPraise = item.type === 'praise';
+            const badgeHtml = isPraise
+                ? `<span class="type-badge praise">✨ Pochvala</span>`
+                : `<span class="type-badge gossip">💀 Pomluva</span>`;
+
             feed.innerHTML += `
                 <div class="card">
+                    ${badgeHtml}
                     <div class="person">@${item.person}</div>
                     <div style="line-height:1.5">${item.text}</div>
-                    ${item.image ? `<img src="${item.image}" class="gossip-img">` : ""}
+                    ${item.image ? `<img src="${item.image}" class="gossip-img" loading="lazy">` : ""}
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                        <button class="post-btn" style="padding:5px 15px; font-size:14px;" onclick="likePost('${id}', ${item.likes})">❤️ ${item.likes || 0}</button>
-                        ${isAdmin ? `<button onclick="deletePost('${id}')" style="background:none; border:none; color:#555; cursor:pointer;">🗑️</button>` : ""}
+                        <button class="post-btn" style="padding:5px 15px; font-size:14px;" onclick="likePost('${id}', ${likes})">
+                            ❤️ ${likes}
+                        </button>
+                        ${isAdmin ? `<button onclick="deletePost('${id}')" style="background:none; border:none; color:#555; cursor:pointer; font-size:18px;">🗑️</button>` : ""}
                     </div>
                 </div>`;
-        } else if(isAdmin) {
-            // Zobrazení v adminu ke schválení
+
+        } else if (isAdmin) {
+            // --- ADMIN: PŘÍSPĚVKY KE SCHVÁLENÍ ---
+            const typLabel = item.type === 'praise' ? '✨ Pochvala' : '💀 Pomluva';
             adminDiv.innerHTML += `
                 <div class="card" style="border-color: var(--accent)">
+                    <div style="font-size:12px; color:var(--muted); margin-bottom:5px;">${typLabel}</div>
                     <b>@${item.person}</b>: ${item.text}
+                    ${item.image ? `<img src="${item.image}" class="gossip-img">` : ""}
                     <div style="margin-top:10px; display:flex; gap:10px;">
                         <button class="post-btn" style="flex:1; background:#28a745; font-size:14px" onclick="approvePost('${id}')">SCHVÁLIT</button>
                         <button class="post-btn" style="flex:1; background:#dc3545; font-size:14px" onclick="deletePost('${id}')">SMAZAT</button>
@@ -294,15 +573,37 @@ onValue(gossipRef, (snapshot) => {
         }
     });
 
-    // Vykreslení rankingu
-    const sorted = Object.entries(rankData).sort((a,b) => b[1] - a[1]);
-    rankingDiv.innerHTML = sorted.length ? sorted.map(([name, likes], i) => `
-        <div class="rank-item">
-            <span style="font-weight:bold;">${i+1}. @${name}</span>
-            <span style="color:var(--accent); font-weight:bold; font-size:18px;">${likes} ❤️</span>
-        </div>
-    `).join('') : "<p>Zatím tu nikdo není...</p>";
+    // =============================================
+    // VYKRESLENÍ RANKINGU — 5 pevných lidí
+    // Seřadí se od nejvyššího skóre po nejnižší.
+    // Barva okraje: zelená = kladné, červená = záporné.
+    // =============================================
+    const sorted = RANKED_PEOPLE
+        .map(name => [name, rankData[name.toLowerCase()] || 0])
+        .sort((a, b) => b[1] - a[1]);
+
+    rankingDiv.innerHTML = sorted.map(([name, score], i) => {
+        const scoreClass = score > 0 ? 'pos' : score < 0 ? 'neg' : '';
+        const borderClass = score > 0 ? 'positive' : score < 0 ? 'negative' : 'neutral';
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+        const scoreDisplay = score > 0 ? `+${score}` : `${score}`;
+
+        return `
+        <div class="rank-item ${borderClass}">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span class="rank-position">${i + 1}</span>
+                <div>
+                    <div style="font-weight:bold;">@${name} ${medal}</div>
+                    <div style="font-size:12px; color:var(--muted);">
+                        ${score > 0 ? 'Populární 📈' : score < 0 ? 'Na pranýři 📉' : 'Neutrální'}
+                    </div>
+                </div>
+            </div>
+            <span class="rank-score ${scoreClass}">${scoreDisplay} ❤️</span>
+        </div>`;
+    }).join('');
 });
 </script>
+
 </body>
 </html>
