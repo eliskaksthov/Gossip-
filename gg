@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>THE LIST</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0a0a0a;
+    color: white;
+}
+
+.container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    letter-spacing: 3px;
+}
+
+.section {
+    margin-top: 25px;
+}
+
+.card {
+    background: #1a1a1a;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.rank {
+    display: flex;
+    justify-content: space-between;
+}
+
+.up { color: #4caf50; }
+.down { color: #f44336; }
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>THE LIST</h1>
+
+    <div class="section">
+        <h3>TOP 5</h3>
+
+        <div class="card rank"><span>#1 Lily</span><span class="up">↑</span></div>
+        <div class="card rank"><span>#2 Mason</span><span class="up">↑</span></div>
+        <div class="card rank"><span>#3 Chloe</span><span class="up">↑</span></div>
+        <div class="card rank"><span>#4 Daniel</span><span class="up">↑</span></div>
+        <div class="card rank"><span>#5 Alison</span><span class="down">↓</span></div>
+    </div>
+
+    <div class="section">
+        <h3>GOSSIP</h3>
+
+        <div id="feed">
+            <div class="card">"Seen: Alison wasn’t alone last night 👀"</div>
+            <div class="card">"Someone is lying. Badly."</div>
+        </div>
+
+        <input id="gossipInput" placeholder="Post anonymous gossip...">
+        <button onclick="postGossip()">POST</button>
+    </div>
+</div>
+
+<script>
+function postGossip() {
+    const input = document.getElementById("gossipInput");
+    const feed = document.getElementById("feed");
+
+    if(input.value.trim() !== "") {
+        const newPost = document.createElement("div");
+        newPost.className = "card";
+        newPost.innerText = '"' + input.value + '"';
+        feed.prepend(newPost);
+        input.value = "";
+    }
+}
+</script>
+
+</body>
+</html>
