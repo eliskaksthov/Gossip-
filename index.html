@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>THE List</title>
+<title>THE LIST</title>
+
 <style>
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     background: #0a0a0a;
     color: white;
 }
@@ -14,51 +15,48 @@ body {
 .container {
     max-width: 400px;
     margin: auto;
-    padding: 20px;
+    padding: 15px;
 }
 
-h1 {
-    text-align: center;
-    letter-spacing: 3px;
+h1 { text-align: center; }
+
+.nav {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
 }
 
-.section {
-    margin-top: 25px;
+.nav button {
+    flex: 1;
+    margin: 2px;
+    padding: 10px;
+    background: #1a1a1a;
+    color: white;
+    border: none;
 }
 
 .card {
     background: #1a1a1a;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 10px;
     margin-bottom: 10px;
+    border-radius: 10px;
 }
 
-.rank {
-    display: flex;
-    justify-content: space-between;
-}
-
-.up { color: #4caf50; }
-.down { color: #f44336; }
-
-button {
+input, button.post {
     width: 100%;
     padding: 10px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: none;
+}
+
+button.post {
     background: white;
     color: black;
-    border: none;
-    border-radius: 8px;
-    margin-top: 10px;
     cursor: pointer;
 }
 
-input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    margin-top: 10px;
-}
+.hidden { display: none; }
 </style>
 </head>
 
@@ -67,42 +65,100 @@ input {
 <div class="container">
     <h1>THE LIST</h1>
 
-    <div class="section">
-        <h3>TOP 5</h3>
-
-        <div class="card rank"><span>#1 Lily</span><span class="up">↑</span></div>
-        <div class="card rank"><span>#2 Mason</span><span class="up">↑</span></div>
-        <div class="card rank"><span>#3 Chloe</span><span class="up">↑</span></div>
-        <div class="card rank"><span>#4 Daniel</span><span class="up">↑</span></div>
-        <div class="card rank"><span>#5 Alison</span><span class="down">↓</span></div>
+    <div class="nav">
+        <button onclick="showTab('home')">Home</button>
+        <button onclick="showTab('ranking')">Ranking</button>
+        <button onclick="showTab('gossip')">Gossip</button>
     </div>
 
-    <div class="section">
-        <h3>GOSSIP</h3>
+    <!-- HOME -->
+    <div id="home">
+        <h3>Latest Gossip</h3>
+        <div id="latest"></div>
+    </div>
 
-        <div id="feed">
-            <div class="card">"Seen: Alison wasn’t alone last night 👀"</div>
-            <div class="card">"Someone is lying. Badly."</div>
-        </div>
+    <!-- RANKING -->
+    <div id="ranking" class="hidden">
+        <h3>Ranking</h3>
+        <div id="rankingList"></div>
+    </div>
 
-        <input id="gossipInput" placeholder="Post anonymous gossip...">
-        <button onclick="postGossip()">POST</button>
+    <!-- GOSSIP -->
+    <div id="gossip" class="hidden">
+        <h3>All Gossip</h3>
+        <div id="feed"></div>
+
+        <input id="input" placeholder="Write gossip... (mention name)">
+        <button class="post" onclick="addGossip()">POST</button>
     </div>
 </div>
 
 <script>
-function postGossip() {
-    const input = document.getElementById("gossipInput");
-    const feed = document.getElementById("feed");
+// default ranking
+let people = {
+    "Lily": 5,
+    "Mason": 4,
+    "Chloe": 3,
+    "Daniel": 2,
+    "Alison": 1
+};
 
-    if(input.value.trim() !== "") {
-        const newPost = document.createElement("div");
-        newPost.className = "card";
-        newPost.innerText = '"' + input.value + '"';
-        feed.prepend(newPost);
-        input.value = "";
-    }
+// load gossip
+let gossip = JSON.parse(localStorage.getItem("gossip")) || [];
+
+// SAVE
+function save() {
+    localStorage.setItem("gossip", JSON.stringify(gossip));
 }
+
+// ADD GOSSIP
+function addGossip() {
+    const input = document.getElementById("input").value;
+    if(input.trim() === "") return;
+
+    gossip.unshift(input);
+
+    // simple ranking logic
+    for (let name in people) {
+        if (input.toLowerCase().includes(name.toLowerCase())) {
+            people[name] += 1;
+        }
+    }
+
+    save();
+    render();
+    document.getElementById("input").value = "";
+}
+
+// RENDER
+function render() {
+
+    // latest
+    document.getElementById("latest").innerHTML =
+        gossip.length ? `<div class="card">"${gossip[0]}"</div>` : "No gossip yet";
+
+    // feed
+    document.getElementById("feed").innerHTML =
+        gossip.map(g => `<div class="card">"${g}"</div>`).join("");
+
+    // ranking
+    let sorted = Object.entries(people).sort((a,b)=>b[1]-a[1]);
+
+    document.getElementById("rankingList").innerHTML =
+        sorted.map((p,i)=>`<div class="card">#${i+1} ${p[0]} (${p[1]})</div>`).join("");
+}
+
+// TABS
+function showTab(tab) {
+    document.getElementById("home").classList.add("hidden");
+    document.getElementById("ranking").classList.add("hidden");
+    document.getElementById("gossip").classList.add("hidden");
+
+    document.getElementById(tab).classList.remove("hidden");
+}
+
+// INIT
+render();
 </script>
 
 </body>
