@@ -24,9 +24,10 @@
         .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--accent); }
         
         .nav-toggle { font-size: 24px; cursor: pointer; color: white; background: none; border: none; }
-        .menu { display: none; position: fixed; top: 60px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; z-index: 1000; flex-direction: column; gap: 10px; }
+        .menu { display: none; position: fixed; top: 60px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; z-index: 1000; flex-direction: column; gap: 5px; min-width: 150px; }
         .menu.active { display: flex; }
-        .menu button { background: none; border: none; color: white; padding: 10px 20px; text-align: left; cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 18px; }
+        .menu button { background: none; border: none; color: white; padding: 12px 15px; text-align: left; cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 18px; border-radius: 5px; }
+        .menu button:hover { background: var(--border); }
 
         .content { padding: 80px 20px 140px; max-width: 500px; margin: auto; }
         .section { display: none; }
@@ -35,19 +36,19 @@
         .card { background: rgba(17, 17, 17, 0.85); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin-bottom: 15px; animation: fadeIn 0.5s ease; }
         .gossip-img { width: 100%; border-radius: 10px; margin-top: 10px; display: block; }
         .person { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 5px; }
-        .meta { color: var(--muted); font-size: 10px; margin-top: 10px; }
-
+        
         .rank-item { display: flex; justify-content: space-between; padding: 15px; background: var(--surface); border-radius: 10px; margin-bottom: 5px; border-left: 4px solid var(--accent); }
 
         .input-area { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.95); border-top: 1px solid var(--border); padding: 15px; z-index: 101; }
         .input-container { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 8px; }
-        input[type="text"] { background: var(--surface); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 8px; outline: none; }
-        .post-btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; cursor: pointer; }
+        input { background: var(--surface); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; outline: none; width: 100%; }
+        .post-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; cursor: pointer; font-size: 16px; }
+
+        .admin-only { display: none !important; }
+        body.is-admin .admin-only { display: block !important; }
+        body.is-admin #loginBtnInMenu { display: none !important; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .admin-only { display: none; }
-        body.is-admin .admin-only { display: block; }
     </style>
 </head>
 <body>
@@ -58,27 +59,37 @@
 </div>
 
 <div class="menu" id="navMenu">
-    <button onclick="showSection('feed')">DRBY (FEED)</button>
-    <button onclick="showSection('ranking')">RANKING (TOP)</button>
-    <button class="admin-only" onclick="showSection('admin')">ADMIN PANEL</button>
+    <button onclick="showSection('feed')">📱 FEED</button>
+    <button onclick="showSection('ranking')">🏆 RANKING</button>
+    <button class="admin-only" onclick="showSection('admin')">⚙️ ADMIN</button>
+    <button id="loginBtnInMenu" onclick="showSection('login')">🔑 LOGIN</button>
+    <button class="admin-only" onclick="logout()" style="color: var(--accent);">🚪 ODHLÁSIT</button>
 </div>
 
 <div class="content">
     <div id="feed" class="section active">
-        <div id="gossipFeed">Načítám...</div>
+        <div id="gossipFeed">Načítám drby...</div>
     </div>
 
     <div id="ranking" class="section">
-        <h2 style="font-family:'Bebas Neue'; margin-bottom:20px;">HALL OF SHAME</h2>
+        <h2 style="font-family:'Bebas Neue'; margin-bottom:20px; letter-spacing: 2px;">HALL OF SHAME</h2>
         <div id="rankingList"></div>
     </div>
 
-    <div id="admin" class="section admin-only">
-        <h2 style="font-family:'Bebas Neue';">ADMIN NASTAVENÍ</h2>
+    <div id="login" class="section">
         <div class="card">
-            <p>Změnit pozadí stránky:</p><br>
+            <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN PŘIHLÁŠENÍ</h2>
+            <input type="text" id="adminUser" placeholder="Jméno" style="margin-bottom: 10px;">
+            <input type="password" id="adminPass" placeholder="Heslo" style="margin-bottom: 15px; background: var(--surface); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; width: 100%;">
+            <button class="post-btn" onclick="handleLogin()" style="width: 100%;">PŘIHLÁSIT SE</button>
+        </div>
+    </div>
+
+    <div id="admin" class="section admin-only">
+        <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN PANEL</h2>
+        <div class="card">
+            <p>Nahrát globální pozadí (pro tebe):</p><br>
             <input type="file" id="bgUpload" accept="image/*" onchange="uploadBackground()">
-            <button onclick="localStorage.removeItem('customBg'); location.reload();" style="margin-top:10px; color:red; background:none; border:none; cursor:pointer;">Resetovat pozadí</button>
         </div>
         <div id="adminApproveList"></div>
     </div>
@@ -86,13 +97,13 @@
 
 <div class="input-area" id="inputArea">
     <div class="input-container">
-        <input type="text" id="personInput" placeholder="Kdo? (jméno/přezdívka)">
-        <input type="text" id="gossipInput" placeholder="Co se děje?">
+        <input type="text" id="personInput" placeholder="O kom to je?">
+        <input type="text" id="gossipInput" placeholder="Napiš drb...">
         <div style="display: flex; gap: 10px;">
-            <label style="background:var(--surface); padding:10px; border-radius:8px; cursor:pointer; flex:1; text-align:center; border:1px solid var(--border)">
-                📷 FOTO <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="this.parentElement.innerText='✅ Foto OK'">
+            <label style="background:var(--surface); padding:12px; border-radius:8px; cursor:pointer; flex:1; text-align:center; border:1px solid var(--border); font-size: 14px;">
+                📷 FOTO <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="this.parentElement.innerText='✅ OK'">
             </label>
-            <button class="post-btn" id="postBtn" style="flex:2">POSLAT DRB</button>
+            <button class="post-btn" id="postBtn" style="flex:2">POST</button>
         </div>
     </div>
 </div>
@@ -102,7 +113,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSy...", // DOPLŇ SVOJE API KLÍČE
+    apiKey: "AIzaSy...", 
     authDomain: "the-list-1efde.firebaseapp.com",
     databaseURL: "https://the-list-1efde-default-rtdb.europe-west1.firebasedatabase.app"
 };
@@ -111,11 +122,32 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const gossipRef = ref(db, 'gossip');
 
-// ADMIN CHECK (BEZ HESLA PRO VEŘEJNOST)
+// --- LOGIN SYSTÉM ---
+const ADMIN_USER = "admin"; // Tady si změň jméno
+const ADMIN_PASS = "mojeheslo123"; // Tady si změň heslo
+
+window.handleLogin = () => {
+    const user = document.getElementById('adminUser').value;
+    const pass = document.getElementById('adminPass').value;
+
+    if(user === ADMIN_USER && pass === ADMIN_PASS) {
+        localStorage.setItem('isAdmin', 'true');
+        alert("Jsi admin!");
+        location.reload();
+    } else {
+        alert("Špatné údaje!");
+    }
+};
+
+window.logout = () => {
+    localStorage.removeItem('isAdmin');
+    location.reload();
+};
+
 const isAdmin = localStorage.getItem('isAdmin') === 'true';
 if(isAdmin) document.body.classList.add('is-admin');
 
-// NAHRÁNÍ POZADÍ
+// --- POZADÍ ---
 window.uploadBackground = function() {
     const file = document.getElementById('bgUpload').files[0];
     const reader = new FileReader();
@@ -124,14 +156,13 @@ window.uploadBackground = function() {
         document.body.style.backgroundImage = `url(${e.target.result})`;
     };
     reader.readAsDataURL(file);
-}
+};
 
-// NAČTENÍ POZADÍ PŘI STARTU
 if(localStorage.getItem('customBg')) {
     document.body.style.backgroundImage = `url(${localStorage.getItem('customBg')})`;
 }
 
-// PŘEPÍNÁNÍ SEKCÍ
+// --- NAVIGACE ---
 window.showSection = (id) => {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -139,12 +170,12 @@ window.showSection = (id) => {
     document.getElementById('inputArea').style.display = (id === 'feed') ? 'block' : 'none';
 };
 
-// POSTOVÁNÍ
+// --- DATA ---
 document.getElementById('postBtn').onclick = async () => {
     const text = document.getElementById('gossipInput').value;
     const person = document.getElementById('personInput').value.trim().toLowerCase();
     const file = document.getElementById('fileInput').files[0];
-    if(!text || !person) return alert("Musíš vyplnit jméno i drb!");
+    if(!text || !person) return alert("Doplň jméno a text!");
 
     let base64 = "";
     if (file) {
@@ -160,66 +191,59 @@ document.getElementById('postBtn').onclick = async () => {
         time: new Date().toLocaleString('cs-CZ'),
         approved: false, likes: 0
     });
-    alert("Drb odeslán ke schválení!");
+    alert("Odesláno ke schválení.");
     location.reload();
 };
 
-// FUNKCE PRO TLAČÍTKA
 window.likePost = (id, cur) => update(ref(db, 'gossip/' + id), { likes: (cur || 0) + 1 });
 window.approvePost = (id) => update(ref(db, 'gossip/' + id), { approved: true });
 window.deletePost = (id) => confirm("Smazat?") && remove(ref(db, 'gossip/' + id));
 
-// LOGIKA ZOBRAZENÍ
 onValue(gossipRef, (snapshot) => {
     const data = snapshot.val() || {};
     const feed = document.getElementById('gossipFeed');
     const rankingDiv = document.getElementById('rankingList');
     const adminDiv = document.getElementById('adminApproveList');
     
-    feed.innerHTML = ""; adminDiv.innerHTML = "<h3>Ke schválení:</h3>";
+    feed.innerHTML = ""; 
+    adminDiv.innerHTML = "<h3 style='margin-top:20px; font-family:Bebas Neue'>Čeká na schválení:</h3>";
     
     const rankData = {};
 
     Object.entries(data).reverse().forEach(([id, item]) => {
-        // Ranking data (jen schválené)
         if(item.approved) {
             rankData[item.person] = (rankData[item.person] || 0) + (item.likes || 0);
-        }
-
-        // Pro admina (neschválené)
-        if(isAdmin && !item.approved) {
-            adminDiv.innerHTML += `<div class="card">
-                <b>@${item.person}</b>: ${item.text}
-                <br><button onclick="approvePost('${id}')">✅ Schválit</button>
-                <button onclick="deletePost('${id}')">🗑️ Smazat</button>
-            </div>`;
-        }
-
-        // Feed (jen schválené)
-        if(item.approved) {
+            
             feed.innerHTML += `
                 <div class="card">
                     <div class="person">@${item.person}</div>
-                    <div>${item.text}</div>
+                    <div style="font-size:15px; line-height:1.4">${item.text}</div>
                     ${item.image ? `<img src="${item.image}" class="gossip-img">` : ""}
-                    <div class="actions">
-                        <button class="like-btn" onclick="likePost('${id}', ${item.likes})">❤️ ${item.likes || 0}</button>
-                        ${isAdmin ? `<button class="admin-btn" onclick="deletePost('${id}')">🗑️</button>` : ""}
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                        <button class="post-btn" style="padding:5px 15px; font-size:14px;" onclick="likePost('${id}', ${item.likes})">❤️ ${item.likes || 0}</button>
+                        ${isAdmin ? `<button onclick="deletePost('${id}')" style="background:none; border:none; color:#555; cursor:pointer;">🗑️</button>` : ""}
+                    </div>
+                </div>`;
+        } else if(isAdmin) {
+            adminDiv.innerHTML += `
+                <div class="card">
+                    <b>@${item.person}</b>: ${item.text}
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="post-btn" style="flex:1; background:#28a745" onclick="approvePost('${id}')">ANO</button>
+                        <button class="post-btn" style="flex:1; background:#dc3545" onclick="deletePost('${id}')">NE</button>
                     </div>
                 </div>`;
         }
     });
 
-    // Vykreslení Rankingu
     const sortedRank = Object.entries(rankData).sort((a,b) => b[1] - a[1]);
-    rankingDiv.innerHTML = sortedRank.map(([name, likes], i) => `
+    rankingDiv.innerHTML = sortedRank.length ? sortedRank.map(([name, likes], i) => `
         <div class="rank-item">
-            <span>#${i+1} @${name}</span>
-            <span style="color:var(--accent)">${likes} ❤️</span>
+            <span>${i+1}. @${name}</span>
+            <span style="color:var(--accent); font-weight:bold;">${likes} ❤️</span>
         </div>
-    `).join('');
+    `).join('') : "Zatím žádný ranking.";
 });
 </script>
-
 </body>
 </html>
