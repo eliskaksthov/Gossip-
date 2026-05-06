@@ -202,8 +202,8 @@ async function loadData() {
     gossips.forEach(item => {
         const commentCount = item.gossip_comments?.[0]?.count || 0;
         
-        // Funkce pro vytvoření karty - allowWriting určuje, jestli tam bude input na komenty
-        const createCard = (allowWriting) => `
+        // Přidán prefix (gossip/recent), aby IDs na stránce byly unikátní
+        const createCard = (prefix, allowWriting) => `
             <div class="card">
                 <div class="person">${item.person}</div>
                 <div class="post-time">${new Date(item.created_at).toLocaleString('cs-CZ')}</div>
@@ -211,15 +211,15 @@ async function loadData() {
                 ${item.image_url ? `<img src="${item.image_url}" class="gossip-img">` : ''}
                 <div class="btn-row">
                     <button class="like-btn ${localStorage.getItem('liked_'+item.id) ? 'liked' : ''}" onclick="likePost('${item.id}', ${item.likes})">${item.likes} LIKES</button>
-                    <button class="comm-btn" onclick="toggleComments('${item.id}', ${allowWriting})">${commentCount} COMMENTS</button>
+                    <button class="comm-btn" onclick="toggleComments('${prefix}', '${item.id}', ${allowWriting})">${commentCount} COMMENTS</button>
                     ${isAdmin ? `<button onclick="deletePost('${item.id}')" style="color:var(--accent); background:none; border:none; font-family:'Bebas Neue'; cursor:pointer;">SMAZAT</button>` : ''}
                 </div>
-                <div class="comments-box" id="box-${item.id}">
-                    <div id="list-${item.id}"></div>
+                <div class="comments-box" id="${prefix}-box-${item.id}">
+                    <div id="${prefix}-list-${item.id}"></div>
                     ${allowWriting ? `
                         <div class="comm-input-wrap">
-                            <input type="text" class="comm-input" id="input-${item.id}" placeholder="Napiš komentář...">
-                            <button class="comm-btn" style="background:var(--accent)" onclick="sendComment('${item.id}')">-></button>
+                            <input type="text" class="comm-input" id="${prefix}-input-${item.id}" placeholder="Napiš komentář...">
+                            <button class="comm-btn" style="background:var(--accent)" onclick="sendComment('${prefix}', '${item.id}')">-></button>
                         </div>
                     ` : '<div style="font-size:11px; color:var(--muted); margin-top:10px; text-align:center;">Komentovat lze pouze v sekci GOSSIPS</div>'}
                 </div>
@@ -227,7 +227,7 @@ async function loadData() {
         `;
 
         if (item.approved) {
-            feed.innerHTML += createCard(true); // V Gossips lze psát
+            feed.innerHTML += createCard('gossip', true); 
             
             const pLower = item.person.toLowerCase();
             RANKED_PEOPLE.forEach(name => {
@@ -235,7 +235,7 @@ async function loadData() {
             });
 
             if ((now - new Date(item.created_at)) < 24 * 60 * 60 * 1000) {
-                recent.innerHTML += createCard(false); // V Recent nelze psát
+                recent.innerHTML += createCard('recent', false); 
             }
         } else if (isAdmin) {
             adminList.innerHTML += `
@@ -261,42 +261,42 @@ async function loadData() {
     `).join('');
 }
 
-async function toggleComments(id, allowWriting) {
-    const box = document.getElementById(`box-${id}`);
+async function toggleComments(prefix, id, allowWriting) {
+    const box = document.getElementById(`${prefix}-box-${id}`);
     if (box.style.display === 'block') {
         box.style.display = 'none';
     } else {
         box.style.display = 'block';
         const { data: comms } = await _supabase.from('gossip_comments').select('*').eq('gossip_id', id).order('created_at', { ascending: true });
-        const list = document.getElementById(`list-${id}`);
+        const list = document.getElementById(`${prefix}-list-${id}`);
         list.innerHTML = comms.length ? comms.map(c => `
             <div class="comment">
                 <div style="font-size:10px; color:var(--muted)">${new Date(c.created_at).toLocaleTimeString('cs-CZ')}</div>
                 ${c.content}
-                ${isAdmin ? `<span style="color:red; cursor:pointer; position:absolute; right:10px; top:10px;" onclick="deleteComment('${c.id}', '${id}', ${allowWriting})">×</span>` : ''}
+                ${isAdmin ? `<span style="color:red; cursor:pointer; position:absolute; right:10px; top:10px;" onclick="deleteComment('${c.id}', '${id}', '${prefix}', ${allowWriting})">×</span>` : ''}
             </div>
         `).join('') : '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">Zatím žádné komentáře.</div>';
     }
 }
 
-async function sendComment(gossipId) {
-    const input = document.getElementById(`input-${gossipId}`);
+async function sendComment(prefix, gossipId) {
+    const input = document.getElementById(`${prefix}-input-${gossipId}`);
     const content = input.value.trim();
     if (!content) return;
     const { error } = await _supabase.from('gossip_comments').insert([{ gossip_id: gossipId, content }]);
     if (!error) {
         input.value = '';
-        toggleComments(gossipId, true); 
+        toggleComments(prefix, gossipId, true); 
         loadData(); 
     }
 }
 
-async function deleteComment(cId, gId, allowWriting) {
+async function deleteComment(cId, gId, prefix, allowWriting) {
     if (!confirm("Smazat komentář?")) return;
     await _supabase.from('gossip_comments').delete().eq('id', cId);
-    const box = document.getElementById(`box-${gId}`);
-    box.style.display = 'none'; // Zavřít pro refresh
-    toggleComments(gId, allowWriting);
+    const box = document.getElementById(`${prefix}-box-${gId}`);
+    box.style.display = 'none'; 
+    toggleComments(prefix, gId, allowWriting);
     loadData();
 }
 
