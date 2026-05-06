@@ -177,9 +177,7 @@ const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 
 // --- NAVIGACE ---
 function showSection(id) {
-    // Schováme všechny sekce
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    // Ukážeme jen tu vybranou
     document.getElementById(id).classList.add('active');
     document.getElementById('navMenu').classList.remove('active');
     
@@ -227,7 +225,7 @@ async function submitGossip() {
     let imageUrl = null;
     if (file) {
         const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
+        const fileName = `${Date.now()}.${fileExt}`;
         const { data, error } = await _supabase.storage.from('gossip-images').upload(fileName, file);
         if (data) {
             imageUrl = `${SUPABASE_URL}/storage/v1/object/public/gossip-images/${fileName}`;
@@ -254,7 +252,6 @@ async function loadData() {
     const adminList = document.getElementById('adminApproveList');
     const rankingList = document.getElementById('rankingList');
 
-    // Vyčištění seznamů před načtením
     feed.innerHTML = ''; recent.innerHTML = ''; adminList.innerHTML = '';
     
     const stats = {};
@@ -262,7 +259,6 @@ async function loadData() {
     const now = new Date();
 
     gossips.forEach(item => {
-        // HTML pro schválený příspěvek (karta)
         const cardHtml = `
             <div class="card">
                 <div class="person">${item.person}</div>
@@ -280,7 +276,6 @@ async function loadData() {
         `;
 
         if (item.approved) {
-            // Pokud je schváleno, dáváme do veřejných feedů
             feed.innerHTML += cardHtml;
             const pLower = item.person.toLowerCase();
             RANKED_PEOPLE.forEach(name => {
@@ -290,11 +285,12 @@ async function loadData() {
                 recent.innerHTML += cardHtml;
             }
        } else {
-            // Pokud NENÍ schváleno, dáváme TO POUZE do seznamu pro admina
-            // Tento seznam je v sekci s id="admin", která je normálně schovaná
+            // Tady jsem přidal zobrazení fotky pro admina ke schválení
             adminList.innerHTML += `
                 <div class="card" style="border: 2px solid orange">
-                    <b style="color:var(--accent)">${item.person}</b>: ${item.content}
+                    <div class="person">${item.person}</div>
+                    <div style="margin: 10px 0;">${item.content}</div>
+                    ${item.image_url ? `<img src="${item.image_url}" class="gossip-img">` : ''}
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button class="post-btn" style="background:var(--accent-good)" onclick="approvePost('${item.id}')">SCHVÁLIT</button>
                         <button class="post-btn" onclick="deletePost('${item.id}')">ZAMÍTNOUT</button>
@@ -334,8 +330,6 @@ async function deletePost(id) {
 
 loadData();
 setInterval(loadData, 30000);
-
-// Defaultní sekce při zapnutí
 showSection('recent');
 </script>
 
