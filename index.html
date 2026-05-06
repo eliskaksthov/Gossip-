@@ -176,20 +176,37 @@ const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 
 // --- NAVIGACE ---
 function showSection(id) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.getElementById('navMenu').classList.remove('active');
+    // 1. Skryjeme všechny sekce
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(s => s.classList.remove('active'));
+
+    // 2. Aktivujeme tu správnou
+    const targetSection = document.getElementById(id);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    // 3. Zavřeme menu (hamburger)
+    const navMenu = document.getElementById('navMenu');
+    if (navMenu) {
+        navMenu.classList.remove('active');
+    }
     
-    // Zobrazení tlačítka + jen ve Feedu nebo Gossips
+    // 4. Logika pro tlačítko "+" (inputToggle)
     const toggleBtn = document.getElementById('inputToggle');
+    const inputArea = document.getElementById('inputArea');
+
     if (id === 'recent') {
-        toggleBtn.style.display = 'block';
+        toggleBtn.style.display = 'flex'; // Používáme flex, aby bylo plusko uprostřed
     } else {
         toggleBtn.style.display = 'none';
-        document.getElementById('inputArea').classList.remove('open');
+        // Pokud přepneme jinam, zavřeme i rozepsaný drb
+        if (inputArea) {
+            inputArea.classList.remove('open');
+            toggleBtn.innerText = '+';
+        }
     }
 }
-
 
 // --- ADMIN LOGIKA ---
 const isAdmin = localStorage.getItem('isInsiderAdmin') === 'true';
