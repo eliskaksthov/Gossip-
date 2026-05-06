@@ -91,12 +91,11 @@
         }
         .input-area.open { transform: translateY(0); }
 
-        /* Tlačítko + defaultně skryté, ukážeme ho jen v sekci feed přes JS */
         .input-toggle-btn {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: 50px; height: 50px; border-radius: 50%; background: var(--accent);
             border: none; color: white; font-size: 24px; cursor: pointer; z-index: 200;
-            display: none;
+            display: none; /* Defaultně schované */
         }
 
         input[type="text"] { 
@@ -135,12 +134,12 @@
     </div>
 
     <div id="recent" class="section active">
-        <h2 class="section-title" style="font-family:'Bebas Neue'">Last 24 Hours</h2>
+        <h2 class="section-title" style="font-family:'Bebas Neue'; margin-bottom: 15px;">Last 24 Hours</h2>
         <div id="recentFeed"></div>
     </div>
 
     <div id="ranking" class="section">
-        <h2 style="font-family:'Bebas Neue'">Ranking</h2>
+        <h2 style="font-family:'Bebas Neue'; margin-bottom: 15px;">Ranking</h2>
         <div id="rankingList"></div>
     </div>
 
@@ -153,7 +152,7 @@
     </div>
 
     <div id="admin" class="section admin-only">
-        <h2 style="font-family:'Bebas Neue'">Ke schválení</h2>
+        <h2 style="font-family:'Bebas Neue'; margin-bottom: 15px;">Ke schválení</h2>
         <div id="adminApproveList"></div>
     </div>
 </div>
@@ -182,13 +181,12 @@ function showSection(id) {
     document.getElementById(id).classList.add('active');
     document.getElementById('navMenu').classList.remove('active');
     
-    // Zobrazení tlačítka + pouze v sekci GOSSIPS (feed)
+    // Tlačítko + se ukáže JEN v sekci GOSSIPS (feed)
     const plusBtn = document.getElementById('inputToggle');
     if (id === 'feed') {
         plusBtn.style.display = 'block';
     } else {
         plusBtn.style.display = 'none';
-        // Zavřít input area pokud se přepne sekce
         document.getElementById('inputArea').classList.remove('open');
         plusBtn.innerText = '+';
     }
@@ -287,7 +285,7 @@ async function loadData() {
                 recent.innerHTML += cardHtml;
             }
         } else if (isAdmin) {
-            // ZDE se nápis KE SCHVÁLENÍ ukazuje pouze pro admina
+            // Pouze pro admina a pouze v sekci Admin (skrze JS logiku výše)
             adminList.innerHTML += `
                 <div class="card" style="border-color:orange">
                     <b>${item.person}</b>: ${item.content}
@@ -329,7 +327,7 @@ async function deletePost(id) {
 loadData();
 setInterval(loadData, 30000);
 
-// Nastavení správné viditelnosti tlačítka hned po načtení (podle aktivní sekce)
+// Spouštíme na úvodní stránce
 showSection('recent');
 </script>
 
