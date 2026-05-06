@@ -60,6 +60,15 @@
         body.is-admin .admin-only { display: block !important; }
         body.is-admin #loginBtn { display: none !important; }
 
+        /* Hide input button by default, visible only for GOSSIPS */
+        .input-toggle-btn {
+            display: none;
+        }
+        
+        #feed.active + .input-toggle-btn {
+            display: block;
+        }
+
         .content { padding: 80px 20px 60px; max-width: 500px; margin: auto; }
 
         .section { display: none; animation: fadeIn 0.4s ease; }
