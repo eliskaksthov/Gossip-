@@ -179,15 +179,17 @@ function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.getElementById('navMenu').classList.remove('active');
+    
+    // Zobrazení tlačítka + jen ve Feedu nebo Gossips
+    const toggleBtn = document.getElementById('inputToggle');
+    if (id === 'recent') {
+        toggleBtn.style.display = 'block';
+    } else {
+        toggleBtn.style.display = 'none';
+        document.getElementById('inputArea').classList.remove('open');
+    }
 }
 
-function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
-
-function toggleInputArea() {
-    const area = document.getElementById('inputArea');
-    area.classList.toggle('open');
-    document.getElementById('inputToggle').innerText = area.classList.contains('open') ? '×' : '+';
-}
 
 // --- ADMIN LOGIKA ---
 const isAdmin = localStorage.getItem('isInsiderAdmin') === 'true';
