@@ -95,7 +95,7 @@
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: 50px; height: 50px; border-radius: 50%; background: var(--accent);
             border: none; color: white; font-size: 24px; cursor: pointer; z-index: 200;
-            display: none; /* Defaultně schované */
+            display: none; 
         }
 
         input[type="text"] { 
@@ -151,7 +151,7 @@
         </div>
     </div>
 
-    <div id="admin" class="section admin-only">
+    <div id="admin" class="section">
         <h2 style="font-family:'Bebas Neue'; margin-bottom: 15px;">Ke schválení</h2>
         <div id="adminApproveList"></div>
     </div>
@@ -177,11 +177,12 @@ const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 
 // --- NAVIGACE ---
 function showSection(id) {
+    // Schováme všechny sekce
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    // Ukážeme jen tu vybranou
     document.getElementById(id).classList.add('active');
     document.getElementById('navMenu').classList.remove('active');
     
-    // Tlačítko + se ukáže JEN v sekci GOSSIPS
     const plusBtn = document.getElementById('inputToggle');
     if (id === 'feed') {
         plusBtn.style.display = 'block';
@@ -235,7 +236,7 @@ async function submitGossip() {
 
     const { error } = await _supabase.from('gossips').insert([{ person, content, image_url: imageUrl }]);
     if (!error) {
-        alert("Odesláno ke schválení!");
+        alert("Odesláno!");
         location.reload();
     }
 }
@@ -253,19 +254,15 @@ async function loadData() {
     const adminList = document.getElementById('adminApproveList');
     const rankingList = document.getElementById('rankingList');
 
-    // Vyčistíme všechna pole
-    feed.innerHTML = ''; 
-    recent.innerHTML = ''; 
-    adminList.innerHTML = '';
+    // Vyčištění seznamů před načtením
+    feed.innerHTML = ''; recent.innerHTML = ''; adminList.innerHTML = '';
     
     const stats = {};
     RANKED_PEOPLE.forEach(p => stats[p.toLowerCase()] = 0);
     const now = new Date();
 
-    // Zjistíme, která sekce je zrovna aktivní
-    const isAdminSectionActive = document.getElementById('admin').classList.contains('active');
-
     gossips.forEach(item => {
+        // HTML pro schválený příspěvek (karta)
         const cardHtml = `
             <div class="card">
                 <div class="person">${item.person}</div>
@@ -283,7 +280,7 @@ async function loadData() {
         `;
 
         if (item.approved) {
-            // Schválené příspěvky jdou do Feedů
+            // Pokud je schváleno, dáváme do veřejných feedů
             feed.innerHTML += cardHtml;
             const pLower = item.person.toLowerCase();
             RANKED_PEOPLE.forEach(name => {
@@ -292,23 +289,21 @@ async function loadData() {
             if ((now - new Date(item.created_at)) < 24 * 60 * 60 * 1000) {
                 recent.innerHTML += cardHtml;
             }
-        } else {
-            // Neschválené příspěvky - ZOBRAZIT JEN POKUD JE ADMIN A JE V SEKCI ADMIN
-            if (isAdmin && isAdminSectionActive) {
-                adminList.innerHTML += `
-                    <div class="card" style="border: 2px solid orange">
-                        <div class="person">${item.person}</div>
-                        <div style="margin: 10px 0;">${item.content}</div>
-                        ${item.image_url ? `<img src="${item.image_url}" class="gossip-img">` : ''}
-                        <button class="post-btn" style="margin-top:10px; background:var(--accent-good)" onclick="approvePost('${item.id}')">SCHVÁLIT</button>
-                        <button class="post-btn" style="margin-top:5px; background:var(--accent)" onclick="deletePost('${item.id}')">ZAMÍTNOUT</button>
+       } else {
+            // Pokud NENÍ schváleno, dáváme TO POUZE do seznamu pro admina
+            // Tento seznam je v sekci s id="admin", která je normálně schovaná
+            adminList.innerHTML += `
+                <div class="card" style="border: 2px solid orange">
+                    <b style="color:var(--accent)">${item.person}</b>: ${item.content}
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="post-btn" style="background:var(--accent-good)" onclick="approvePost('${item.id}')">SCHVÁLIT</button>
+                        <button class="post-btn" onclick="deletePost('${item.id}')">ZAMÍTNOUT</button>
                     </div>
-                `;
-            }
+                </div>
+            `;
         }
     });
 
-    // Ranking zůstává stejný
     const sorted = [...RANKED_PEOPLE].sort((a,b) => stats[b.toLowerCase()] - stats[a.toLowerCase()]);
     rankingList.innerHTML = sorted.map((name, i) => `
         <div class="card" style="display:flex; justify-content:space-between">
@@ -331,18 +326,18 @@ async function approvePost(id) {
 }
 
 async function deletePost(id) {
-    if (confirm("Opravdu smazat/zamítnout?")) {
+    if (confirm("Opravdu smazat?")) {
         await _supabase.from('gossips').delete().eq('id', id);
         loadData();
     }
 }
 
-// Spuštění
 loadData();
 setInterval(loadData, 30000);
+
+// Defaultní sekce při zapnutí
 showSection('recent');
 </script>
-
 
 </body>
 </html>
