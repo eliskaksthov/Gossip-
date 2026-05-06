@@ -95,7 +95,7 @@
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: 50px; height: 50px; border-radius: 50%; background: var(--accent);
             border: none; color: white; font-size: 24px; cursor: pointer; z-index: 200;
-            display: none; /* Defaultně schované */
+            display: none;
         }
 
         input[type="text"] { 
@@ -152,7 +152,7 @@
     </div>
 
     <div id="admin" class="section admin-only">
-        <h2 style="font-family:'Bebas Neue'; margin-bottom: 15px;">Ke schválení</h2>
+        <h2 style="font-family:'Bebas Neue'; margin-bottom: 15px;">KE SCHVÁLENÍ</h2>
         <div id="adminApproveList"></div>
     </div>
 </div>
@@ -181,15 +181,9 @@ function showSection(id) {
     document.getElementById(id).classList.add('active');
     document.getElementById('navMenu').classList.remove('active');
     
-    // Tlačítko + se ukáže JEN v sekci GOSSIPS (feed)
+    // Tlačítko + jen v sekci Gossips
     const plusBtn = document.getElementById('inputToggle');
-    if (id === 'feed') {
-        plusBtn.style.display = 'block';
-    } else {
-        plusBtn.style.display = 'none';
-        document.getElementById('inputArea').classList.remove('open');
-        plusBtn.innerText = '+';
-    }
+    plusBtn.style.display = (id === 'feed') ? 'block' : 'none';
 }
 
 function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
@@ -259,23 +253,22 @@ async function loadData() {
     const now = new Date();
 
     gossips.forEach(item => {
-        const cardHtml = `
-            <div class="card">
-                <div class="person">${item.person}</div>
-                <div class="post-time">${new Date(item.created_at).toLocaleString('cs-CZ')}</div>
-                <div style="margin: 10px 0;">${item.content}</div>
-                ${item.image_url ? `<img src="${item.image_url}" class="gossip-img">` : ''}
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <button class="like-btn ${localStorage.getItem('liked_'+item.id) ? 'liked' : ''}" 
-                            onclick="likePost('${item.id}', ${item.likes})">
-                        ${item.likes} LIKES
-                    </button>
-                    ${isAdmin ? `<button onclick="deletePost('${item.id}')" style="color:red; background:none; border:none; font-family:'Bebas Neue'">Smazat</button>` : ''}
-                </div>
-            </div>
-        `;
-
         if (item.approved) {
+            const cardHtml = `
+                <div class="card">
+                    <div class="person">${item.person}</div>
+                    <div class="post-time">${new Date(item.created_at).toLocaleString('cs-CZ')}</div>
+                    <div style="margin: 10px 0;">${item.content}</div>
+                    ${item.image_url ? `<img src="${item.image_url}" class="gossip-img">` : ''}
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <button class="like-btn ${localStorage.getItem('liked_'+item.id) ? 'liked' : ''}" 
+                                onclick="likePost('${item.id}', ${item.likes})">
+                            ${item.likes} LIKES
+                        </button>
+                        ${isAdmin ? `<button onclick="deletePost('${item.id}')" style="color:red; background:none; border:none; font-family:'Bebas Neue'">Smazat</button>` : ''}
+                    </div>
+                </div>
+            `;
             feed.innerHTML += cardHtml;
             const pLower = item.person.toLowerCase();
             RANKED_PEOPLE.forEach(name => {
@@ -285,12 +278,14 @@ async function loadData() {
                 recent.innerHTML += cardHtml;
             }
         } else if (isAdmin) {
-            // Pouze pro admina a pouze v sekci Admin (skrze JS logiku výše)
+            // Tady se to vykreslí POUZE do seznamu v sekci Admin
             adminList.innerHTML += `
-                <div class="card" style="border-color:orange">
-                    <b>${item.person}</b>: ${item.content}
-                    <button class="post-btn" style="margin-top:10px; background:green" onclick="approvePost('${item.id}')">SCHVÁLIT</button>
-                    <button class="post-btn" style="margin-top:5px; background:red" onclick="deletePost('${item.id}')">ZAMÍTNOUT</button>
+                <div class="card" style="border: 2px solid orange">
+                    <div class="person" style="color:orange">KE SCHVÁLENÍ</div>
+                    <div style="margin: 10px 0;"><b>${item.person}:</b> ${item.content}</div>
+                    ${item.image_url ? `<img src="${item.image_url}" class="gossip-img" style="opacity:0.5">` : ''}
+                    <button class="post-btn" style="background:green; margin-bottom:5px;" onclick="approvePost('${item.id}')">SCHVÁLIT</button>
+                    <button class="post-btn" style="background:red" onclick="deletePost('${item.id}')">ZAMÍTNOUT</button>
                 </div>
             `;
         }
@@ -326,8 +321,6 @@ async function deletePost(id) {
 
 loadData();
 setInterval(loadData, 30000);
-
-// Spouštíme na úvodní stránce
 showSection('recent');
 </script>
 
