@@ -38,9 +38,24 @@
             padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; 
         }
 
+        .header-right { display: flex; align-items: center; gap: 15px; }
+
         .logo { font-size: 28px; color: var(--accent); font-weight: bold; }
-        .nav-toggle { font-size: 28px; cursor: pointer; color: white; background: none; border: none; }
+        .nav-toggle, .search-toggle { font-size: 24px; cursor: pointer; color: white; background: none; border: none; outline: none; }
         
+        /* Styl pro vyhledávací lištu */
+        .search-bar {
+            position: fixed; top: 60px; left: 0; right: 0;
+            background: rgba(17, 17, 17, 0.95);
+            padding: 10px 20px; border-bottom: 1px solid var(--border);
+            display: none; z-index: 99; transform: translateY(-10px); transition: 0.3s;
+        }
+        .search-bar.active { display: block; transform: translateY(0); }
+        .search-input {
+            width: 100%; padding: 12px; background: #222; border: 1px solid var(--border);
+            border-radius: 25px; color: white; font-family: 'DM Sans', sans-serif; outline: none;
+        }
+
         .menu { 
             display: none; position: fixed; top: 60px; right: 20px; 
             background: var(--surface); border: 1px solid var(--border); 
@@ -57,7 +72,6 @@
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: block !important; }
 
-        /* UPRAVENO: Kontejner je nyní flexibilní */
         .content { padding: 80px 20px 60px; width: 100%; max-width: 500px; margin: auto; transition: max-width 0.3s; }
 
         .section { display: none; }
@@ -82,14 +96,13 @@
         .gossip-img { 
             width: 100%; border-radius: 10px; margin: 10px 0; display: block; 
             cursor: pointer; transition: opacity 0.2s;
-            object-fit: contain; /* Zajišťuje nedeformování */
+            object-fit: contain;
         }
         .gossip-img:hover { opacity: 0.9; }
 
-        /* NOVÉ: Pravidla pro PC (šířka příspěvků) */
         @media (min-width: 1024px) {
-            .content { max-width: 1200px; } /* Roztažení kontejneru na PC */
-            .hero-card .gossip-img { max-height: 70vh; } /* Aby nebyl obrázek vyšší než obrazovka */
+            .content { max-width: 1200px; }
+            .hero-card .gossip-img { max-height: 70vh; }
         }
 
         .person { color: var(--accent); font-size: 14px; font-weight: bold; text-transform: uppercase; }
@@ -118,7 +131,6 @@
             padding: 8px; border-radius: 5px; font-size: 13px; outline: none;
         }
 
-        /* LIGHTBOX - FULLSCREEN IMAGE */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center;
@@ -151,7 +163,14 @@
 
 <div class="header">
     <div class="logo">Insider</div>
-    <button class="nav-toggle" onclick="toggleMenu()">&#9776;</button>
+    <div class="header-right">
+        <button class="search-toggle" onclick="toggleSearch()">🔍</button>
+        <button class="nav-toggle" onclick="toggleMenu()">&#9776;</button>
+    </div>
+</div>
+
+<div class="search-bar" id="searchBar">
+    <input type="text" class="search-input" id="searchInput" placeholder="Hledat osobu nebo text..." oninput="filterPosts()">
 </div>
 
 <div class="menu" id="navMenu">
@@ -210,6 +229,19 @@ const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 const isAdmin = localStorage.getItem('isInsiderAdmin') === 'true';
 if (isAdmin) document.body.classList.add('is-admin');
 
+let allGossips = []; // Ukládáme data pro filtrování
+
+function toggleSearch() {
+    const bar = document.getElementById('searchBar');
+    bar.classList.toggle('active');
+    if (bar.classList.contains('active')) {
+        document.getElementById('searchInput').focus();
+    } else {
+        document.getElementById('searchInput').value = '';
+        filterPosts(); // Reset filtru
+    }
+}
+
 function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -225,7 +257,6 @@ function toggleInputArea() {
     document.getElementById('inputToggle').innerText = area.classList.contains('open') ? '×' : '+';
 }
 
-// Lightbox Funkce
 function openLightbox(src) {
     const lb = document.getElementById('imageLightbox');
     const img = document.getElementById('lightboxImg');
@@ -236,9 +267,19 @@ function closeLightbox() {
     document.getElementById('imageLightbox').classList.remove('active');
 }
 
+// Hlavní funkce pro filtrování
+function filterPosts() {
+    const term = document.getElementById('searchInput').value.toLowerCase().trim();
+    renderGossips(allGossips, term);
+}
+
 async function loadData() {
     const { data: gossips } = await _supabase.from('gossips').select('*, gossip_comments(count)').order('created_at', { ascending: false });
-    
+    allGossips = gossips || [];
+    renderGossips(allGossips);
+}
+
+function renderGossips(gossips, filter = '') {
     const feed = document.getElementById('feed');
     const recent = document.getElementById('recentContent');
     const adminList = document.getElementById('adminContent');
@@ -247,6 +288,12 @@ async function loadData() {
     feed.innerHTML = ''; recent.innerHTML = ''; adminList.innerHTML = '';
     const stats = {};
     RANKED_PEOPLE.forEach(p => stats[p.toLowerCase()] = 0);
+
+    const filteredApproved = gossips.filter(item => {
+        if (!item.approved) return false;
+        if (!filter) return true;
+        return item.person.toLowerCase().includes(filter) || item.content.toLowerCase().includes(filter);
+    });
 
     gossips.forEach(item => {
         const commentCount = item.gossip_comments?.[0]?.count || 0;
@@ -275,7 +322,11 @@ async function loadData() {
         `;
 
         if (item.approved) {
-            feed.innerHTML += createCard('gossip', true); 
+            // Přidáme do feedu jen pokud prochází filtrem
+            if (filteredApproved.includes(item)) {
+                feed.innerHTML += createCard('gossip', true);
+            }
+            
             const pLower = item.person.toLowerCase();
             RANKED_PEOPLE.forEach(name => {
                 if (pLower.includes(name.toLowerCase())) stats[name.toLowerCase()]++;
@@ -295,9 +346,10 @@ async function loadData() {
         }
     });
 
-    const latestGossip = gossips.find(g => g.approved === true);
-    if (latestGossip) {
-        const item = latestGossip;
+    // Breaking News (vždy nejnovější schválený, respektuje filtr)
+    const heroPost = filteredApproved[0];
+    if (heroPost) {
+        const item = heroPost;
         const commentCount = item.gossip_comments?.[0]?.count || 0;
         recent.innerHTML = `
             <div class="card hero-card">
@@ -315,6 +367,8 @@ async function loadData() {
                 </div>
             </div>
         `;
+    } else if (filter) {
+        recent.innerHTML = '<p style="text-align:center; color:var(--muted);">Nenalezen žádný výsledek.</p>';
     }
 
     const sorted = [...RANKED_PEOPLE].sort((a,b) => stats[b.toLowerCase()] - stats[a.toLowerCase()]);
