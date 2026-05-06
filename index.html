@@ -43,7 +43,6 @@
         .logo { font-size: 28px; color: var(--accent); font-weight: bold; }
         .nav-toggle, .search-toggle { font-size: 24px; cursor: pointer; color: white; background: none; border: none; outline: none; }
         
-        /* UPRAVENO: Vyhledávací lišta s tlačítky */
         .search-bar {
             position: fixed; top: 60px; left: 0; right: 0;
             background: rgba(17, 17, 17, 0.95);
@@ -86,8 +85,12 @@
             font-size: 18px; border-radius: 8px;
         }
 
+        /* OPRAVA: Viditelnost v menu */
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: block !important; }
+        
+        /* Skrytí Login tlačítka, když je uživatel admin */
+        body.is-admin .guest-only { display: none !important; }
 
         .content { padding: 80px 20px 60px; width: 100%; max-width: 500px; margin: auto; transition: max-width 0.3s; }
 
@@ -200,7 +203,7 @@
     <button onclick="showSection('recent')">FEED 24H</button>
     <button onclick="showSection('feed')">GOSSIPS</button>
     <button onclick="showSection('ranking')">RANKING</button>
-    <button id="loginBtn" onclick="showSection('login')">LOGIN</button>
+    <button id="loginBtn" class="guest-only" onclick="showSection('login')">LOGIN</button>
     <button class="admin-only" onclick="showSection('admin')">ADMIN</button>
     <button class="admin-only" onclick="logout()" style="color: var(--accent);">LOG OUT</button>
 </div>
@@ -263,14 +266,12 @@ function toggleSearch() {
     }
 }
 
-// Funkce pro potvrzení vyhledávání (Search tlačítko)
 function confirmSearch() {
     currentFilter = document.getElementById('searchInput').value.toLowerCase().trim();
     renderGossips(allGossips, currentFilter);
-    toggleSearch(); // Schová lištu po vyhledání
+    toggleSearch(); 
 }
 
-// Funkce pro křížek (Vymazání)
 function clearSearch() {
     document.getElementById('searchInput').value = '';
     currentFilter = '';
