@@ -43,7 +43,7 @@
         .logo { font-size: 28px; color: var(--accent); font-weight: bold; }
         .nav-toggle, .search-toggle { font-size: 24px; cursor: pointer; color: white; background: none; border: none; outline: none; }
         
-        /* Styl pro vyhledávací lištu */
+        /* UPRAVENO: Vyhledávací lišta s tlačítky */
         .search-bar {
             position: fixed; top: 60px; left: 0; right: 0;
             background: rgba(17, 17, 17, 0.95);
@@ -51,9 +51,26 @@
             display: none; z-index: 99; transform: translateY(-10px); transition: 0.3s;
         }
         .search-bar.active { display: block; transform: translateY(0); }
+        
+        .search-container {
+            display: flex; gap: 10px; align-items: center; max-width: 1200px; margin: auto;
+        }
+
+        .input-wrapper { position: relative; flex: 1; }
+
         .search-input {
-            width: 100%; padding: 12px; background: #222; border: 1px solid var(--border);
+            width: 100%; padding: 12px 40px 12px 15px; background: #222; border: 1px solid var(--border);
             border-radius: 25px; color: white; font-family: 'DM Sans', sans-serif; outline: none;
+        }
+
+        .clear-search {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px;
+        }
+
+        .search-confirm-btn {
+            background: var(--accent); color: white; border: none; padding: 10px 20px;
+            border-radius: 20px; font-family: 'Bebas Neue'; cursor: pointer; font-size: 16px;
         }
 
         .menu { 
@@ -170,7 +187,13 @@
 </div>
 
 <div class="search-bar" id="searchBar">
-    <input type="text" class="search-input" id="searchInput" placeholder="Hledat osobu nebo text..." oninput="filterPosts()">
+    <div class="search-container">
+        <div class="input-wrapper">
+            <input type="text" class="search-input" id="searchInput" placeholder="Hledat osobu nebo text..." onkeypress="if(event.key === 'Enter') confirmSearch()">
+            <button class="clear-search" onclick="clearSearch()">✕</button>
+        </div>
+        <button class="search-confirm-btn" onclick="confirmSearch()">SEARCH</button>
+    </div>
 </div>
 
 <div class="menu" id="navMenu">
@@ -229,17 +252,29 @@ const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 const isAdmin = localStorage.getItem('isInsiderAdmin') === 'true';
 if (isAdmin) document.body.classList.add('is-admin');
 
-let allGossips = []; // Ukládáme data pro filtrování
+let allGossips = []; 
+let currentFilter = '';
 
 function toggleSearch() {
     const bar = document.getElementById('searchBar');
     bar.classList.toggle('active');
     if (bar.classList.contains('active')) {
         document.getElementById('searchInput').focus();
-    } else {
-        document.getElementById('searchInput').value = '';
-        filterPosts(); // Reset filtru
     }
+}
+
+// Funkce pro potvrzení vyhledávání (Search tlačítko)
+function confirmSearch() {
+    currentFilter = document.getElementById('searchInput').value.toLowerCase().trim();
+    renderGossips(allGossips, currentFilter);
+    toggleSearch(); // Schová lištu po vyhledání
+}
+
+// Funkce pro křížek (Vymazání)
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    currentFilter = '';
+    renderGossips(allGossips, '');
 }
 
 function showSection(id) {
@@ -267,16 +302,10 @@ function closeLightbox() {
     document.getElementById('imageLightbox').classList.remove('active');
 }
 
-// Hlavní funkce pro filtrování
-function filterPosts() {
-    const term = document.getElementById('searchInput').value.toLowerCase().trim();
-    renderGossips(allGossips, term);
-}
-
 async function loadData() {
     const { data: gossips } = await _supabase.from('gossips').select('*, gossip_comments(count)').order('created_at', { ascending: false });
     allGossips = gossips || [];
-    renderGossips(allGossips);
+    renderGossips(allGossips, currentFilter);
 }
 
 function renderGossips(gossips, filter = '') {
@@ -322,11 +351,9 @@ function renderGossips(gossips, filter = '') {
         `;
 
         if (item.approved) {
-            // Přidáme do feedu jen pokud prochází filtrem
             if (filteredApproved.includes(item)) {
                 feed.innerHTML += createCard('gossip', true);
             }
-            
             const pLower = item.person.toLowerCase();
             RANKED_PEOPLE.forEach(name => {
                 if (pLower.includes(name.toLowerCase())) stats[name.toLowerCase()]++;
@@ -346,7 +373,6 @@ function renderGossips(gossips, filter = '') {
         }
     });
 
-    // Breaking News (vždy nejnovější schválený, respektuje filtr)
     const heroPost = filteredApproved[0];
     if (heroPost) {
         const item = heroPost;
@@ -368,7 +394,7 @@ function renderGossips(gossips, filter = '') {
             </div>
         `;
     } else if (filter) {
-        recent.innerHTML = '<p style="text-align:center; color:var(--muted);">Nenalezen žádný výsledek.</p>';
+        recent.innerHTML = '<p style="text-align:center; color:var(--muted); margin-top:20px;">Nenalezen žádný výsledek pro: "' + filter + '"</p>';
     }
 
     const sorted = [...RANKED_PEOPLE].sort((a,b) => stats[b.toLowerCase()] - stats[a.toLowerCase()]);
