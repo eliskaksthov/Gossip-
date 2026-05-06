@@ -591,7 +591,7 @@ onValue(gossipRef, (snapshot) => {
             feed.innerHTML += `
                 <div class="card">
                     ${badgeHtml}
-                    <div class="person">@${item.person}</div>
+                    <div class="person">${item.person}</div>
                     <div style="line-height:1.5">${item.text}</div>
                     ${item.image ? `<img src="${item.image}" class="gossip-img" loading="lazy">` : ""}
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
@@ -608,7 +608,7 @@ onValue(gossipRef, (snapshot) => {
             adminDiv.innerHTML += `
                 <div class="card" style="border-color: var(--accent)">
                     <div style="font-size:12px; color:var(--muted); margin-bottom:5px;">${typLabel}</div>
-                    <b>@${item.person}</b>: ${item.text}
+                    <b>${item.person}</b>: ${item.text}
                     ${item.image ? `<img src="${item.image}" class="gossip-img">` : ""}
                     <div style="margin-top:10px; display:flex; gap:10px;">
                         <button class="post-btn" style="flex:1; background:#28a745; font-size:14px" onclick="approvePost('${id}')">APPROVE</button>
@@ -633,7 +633,7 @@ onValue(gossipRef, (snapshot) => {
         <div class="rank-item ${rankClass}">
             <div style="display:flex; align-items:center; gap:8px;">
                 <span class="rank-position">${i + 1}</span>
-                <div style="font-weight:bold;">@${name}</div>
+                <div style="font-weight:bold;">${name}</div>
             </div>
             <span class="rank-count">${countText}</span>
         </div>`;
