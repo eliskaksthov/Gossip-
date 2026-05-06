@@ -7,9 +7,6 @@
     <title>Insider</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        /* =============================================
-           PROMĚNNÉ BAREV
-           ============================================= */
         :root { 
             --bg: #080808; 
             --surface: #111111; 
@@ -23,11 +20,6 @@
 ```
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    /* =============================================
-       TĚLO STRÁNKY
-       background-size: cover bez blur = ostrá fotka.
-       image-rendering zajišťuje ostrý render.
-       ============================================= */
     body { 
         font-family: 'DM Sans', sans-serif; 
         background-color: var(--bg);
@@ -39,13 +31,8 @@
         -webkit-font-smoothing: antialiased;
         color: var(--text); 
         min-height: 100vh; 
-        transition: background-image 0.3s ease;
     }
 
-    /* =============================================
-       HORNÍ NAVIGAČNÍ LIŠTA (HEADER)
-       Průhlednost snížena — méně blur = ostřejší bg.
-       ============================================= */
     .header { 
         position: fixed; top: 0; left: 0; right: 0; z-index: 100; 
         background: rgba(8,8,8,0.75);
@@ -54,12 +41,19 @@
         border-bottom: 1px solid var(--border); 
         padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; 
     }
-    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--accent); }
+
+    /* =============================================
+       LOGO
+       Bebas Neue vždy velká. Pro malá změň na 'DM Sans'.
+       ============================================= */
+    .logo { 
+        font-family: 'Bebas Neue', sans-serif; 
+        font-size: 28px; 
+        letter-spacing: 4px; 
+        color: var(--accent); 
+    }
     .nav-toggle { font-size: 28px; cursor: pointer; color: white; background: none; border: none; }
     
-    /* =============================================
-       HAMBURGER MENU
-       ============================================= */
     .menu { 
         display: none; position: fixed; top: 60px; right: 20px; 
         background: var(--surface); border: 1px solid var(--border); 
@@ -75,9 +69,10 @@
     }
     .menu button:hover { background: var(--border); color: var(--accent); }
 
-    /* =============================================
-       HLAVNÍ OBLAST OBSAHU
-       ============================================= */
+    .admin-only { display: none !important; }
+    body.is-admin .admin-only { display: block !important; }
+    body.is-admin #loginBtn { display: none !important; }
+
     .content { 
         padding: 80px 20px 60px; 
         max-width: 500px; 
@@ -89,10 +84,6 @@
     .section { display: none; animation: fadeIn 0.4s ease; }
     .section.active { display: block; }
 
-    /* =============================================
-       KARTA
-       Méně blur na kartách = ostrý obraz na pozadí.
-       ============================================= */
     .card { 
         background: rgba(17, 17, 17, 0.82);
         backdrop-filter: blur(6px);
@@ -101,9 +92,6 @@
         padding: 15px; margin-bottom: 15px; 
     }
 
-    /* =============================================
-       OBRÁZEK V KARTĚ
-       ============================================= */
     .gossip-img { 
         width: 100%; 
         max-height: 400px;
@@ -114,11 +102,58 @@
         display: block; 
     }
 
-    .person { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+    .person { 
+        color: var(--accent); 
+        font-size: 14px; 
+        font-weight: bold; 
+        margin-bottom: 3px; 
+        text-transform: uppercase; 
+    }
 
-    /* =============================================
-       RANKING
-       ============================================= */
+    /* Čas napsání */
+    .post-time {
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 8px;
+        letter-spacing: 0.3px;
+    }
+
+    .section-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 32px;
+        margin-bottom: 6px;
+    }
+    .section-subtitle {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    /* Pulzující tečka pro Feed */
+    .live-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        background: var(--accent);
+        border-radius: 50%;
+        margin-right: 6px;
+        animation: pulse 1.5s infinite;
+        vertical-align: middle;
+        position: relative;
+        top: -2px;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--muted);
+        padding: 40px 20px;
+        font-size: 14px;
+    }
+
     .ranking-title {
         font-family: 'Bebas Neue', sans-serif;
         font-size: 32px;
@@ -149,9 +184,6 @@
         text-align: right;
     }
 
-    /* =============================================
-       PŘIHLAŠOVACÍ FORMULÁŘ (ADMIN)
-       ============================================= */
     .login-input {
         margin-bottom: 10px;
         width: 100%;
@@ -164,16 +196,6 @@
         font-family: 'DM Sans', sans-serif;
     }
 
-    /* =============================================
-       ADMIN PANEL
-       ============================================= */
-    .admin-only { display: none !important; }
-    body.is-admin .admin-only { display: block !important; }
-    body.is-admin #loginBtn { display: none !important; }
-
-    /* =============================================
-       SIPKA
-       ============================================= */
     .input-toggle-btn {
         position: fixed;
         bottom: 18px;
@@ -195,9 +217,7 @@
         justify-content: center;
         transition: bottom 0.4s cubic-bezier(0.4,0,0.2,1), background 0.2s;
     }
-    .input-toggle-btn.open {
-        bottom: 155px;
-    }
+    .input-toggle-btn.open { bottom: 155px; }
     .input-toggle-btn:hover { background: rgba(40,40,40,0.9); }
 
     .arrow-svg {
@@ -205,13 +225,8 @@
         height: 18px;
         transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
     }
-    .input-toggle-btn.open .arrow-svg {
-        transform: rotate(180deg);
-    }
+    .input-toggle-btn.open .arrow-svg { transform: rotate(180deg); }
 
-    /* =============================================
-       SPODNÍ LIŠTA
-       ============================================= */
     .input-area { 
         position: fixed; bottom: 0; left: 0; right: 0; 
         background: rgba(8,8,8,0.60);
@@ -223,9 +238,7 @@
         transform: translateY(100%);
         transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
     }
-    .input-area.open {
-        transform: translateY(0);
-    }
+    .input-area.open { transform: translateY(0); }
 
     .input-container { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 8px; }
 
@@ -238,9 +251,6 @@
     }
     input[type="text"]::placeholder { color: var(--muted); }
 
-    /* =============================================
-       TLAČÍTKO POSLAT
-       ============================================= */
     .post-btn { 
         background: var(--accent); color: white; border: none; 
         padding: 12px; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; 
@@ -254,30 +264,33 @@
 </head>
 <body>
 
-<!-- HORNÍ LIŠTA -->
-
 <div class="header">
     <div class="logo">Insider</div>
     <button class="nav-toggle" onclick="toggleMenu()">&#9776;</button>
 </div>
 
-<!-- HAMBURGER MENU -->
-
 <div class="menu" id="navMenu">
     <button onclick="showSection('feed')">GOSSIPS</button>
+    <button onclick="showSection('recent')">FEED</button>
     <button onclick="showSection('ranking')">RANKING</button>
     <button id="loginBtn" onclick="showSection('login')">LOGIN</button>
     <button class="admin-only" onclick="showSection('admin')">ADMIN</button>
     <button class="admin-only" onclick="logout()" style="color: var(--accent);">LOG OUT</button>
 </div>
 
-<!-- HLAVNÍ OBSAH -->
-
 <div class="content" id="mainContent">
 
 ```
+<!-- GOSSIPS — všechny schválené -->
 <div id="feed" class="section active">
     <div id="gossipFeed">Loading...</div>
+</div>
+
+<!-- FEED — posledních 24 hodin -->
+<div id="recent" class="section">
+    <div class="section-title"><span class="live-dot"></span>Feed</div>
+    <div class="section-subtitle">gossips from the last 24 hours</div>
+    <div id="recentFeed">Loading...</div>
 </div>
 
 <div id="ranking" class="section">
@@ -303,15 +316,11 @@
 
 </div>
 
-<!-- SIPKA -->
-
 <button class="input-toggle-btn" id="inputToggle" onclick="toggleInputArea()">
     <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="18 15 12 9 6 15"></polyline>
     </svg>
 </button>
-
-<!-- SPODNÍ LIŠTA -->
 
 <div class="input-area" id="inputArea">
     <div class="input-container">
@@ -331,9 +340,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// =============================================
-// KONFIGURACE FIREBASE
-// =============================================
 const firebaseConfig = {
     apiKey: "SEM_VLOZ_SVOJE_API",
     authDomain: "the-list-1efde.firebaseapp.com",
@@ -344,14 +350,8 @@ const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 const gossipRef = ref(db, 'gossip');
 
-// =============================================
-// PEVNÝ SEZNAM LIDÍ V RANKINGU
-// =============================================
 const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 
-// =============================================
-// ADMIN PŘIHLAŠOVÁNÍ
-// =============================================
 const ADMIN_USER = "admin"; 
 const ADMIN_PASS = "1234";
 
@@ -368,21 +368,9 @@ window.logout = () => { localStorage.removeItem('isAdmin'); location.reload(); }
 const isAdmin = localStorage.getItem('isAdmin') === 'true';
 if (isAdmin) document.body.classList.add('is-admin');
 
-// =============================================
-// POZADÍ — ostrá fotka bez blur artefaktů.
-//
-// Pozadí se nastaví přes CSS background-image.
-// Klíč: background-size: cover bez dalších filtrů
-// na body samotném zajistí plnou ostrost.
-// Rozmazání způsobovaly backdrop-filter na kartách
-// (sníženy) a backdrop-filter na headeru (snížen).
-// =============================================
 const globalDefaultBg = "https://i.imgur.com/BBWTLg6.jpeg";
 document.body.style.backgroundImage = `url(${globalDefaultBg})`;
 
-// =============================================
-// NAVIGACE
-// =============================================
 window.toggleMenu = () => document.getElementById('navMenu').classList.toggle('active');
 
 window.showSection = (id) => {
@@ -390,7 +378,7 @@ window.showSection = (id) => {
     document.getElementById(id).classList.add('active');
     document.getElementById('navMenu').classList.remove('active');
     const toggleBtn = document.getElementById('inputToggle');
-    if (id === 'feed') {
+    if (id === 'feed' || id === 'recent') {
         toggleBtn.style.display = 'flex';
     } else {
         toggleBtn.style.display = 'none';
@@ -398,11 +386,7 @@ window.showSection = (id) => {
     }
 };
 
-// =============================================
-// SIPKA — OTEVRIT / ZAVRIT SPODNI LISTU
-// =============================================
 let inputOpen = false;
-
 window.toggleInputArea = () => {
     inputOpen = !inputOpen;
     const area    = document.getElementById('inputArea');
@@ -424,9 +408,39 @@ function closeInputArea() {
     document.getElementById('mainContent').classList.remove('input-visible');
 }
 
-// =============================================
-// ODESLÁNÍ NOVÉHO DRBU
-// =============================================
+// Sestaví HTML jedné karty; DELETE jen pro admina
+function buildCard(id, item, showDelete) {
+    const likes = item.likes || 0;
+    const timeHtml = item.time 
+        ? `<div class="post-time">${item.time}</div>` 
+        : '';
+    return `
+        <div class="card">
+            <div class="person">${item.person}</div>
+            ${timeHtml}
+            <div style="line-height:1.5">${item.text}</div>
+            ${item.image ? `<img src="${item.image}" class="gossip-img" loading="lazy">` : ""}
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                <button class="post-btn" style="padding:5px 15px; font-size:14px;" onclick="likePost('${id}', ${likes})">
+                    ${likes} likes
+                </button>
+                ${showDelete ? `<button onclick="deletePost('${id}')" style="background:none; border:none; color:#555; cursor:pointer; font-size:14px; font-family:'Bebas Neue'">DELETE</button>` : ""}
+            </div>
+        </div>`;
+}
+
+// Parsuje český formát "6. 5. 2026 14:30:00"
+function parseTime(timeStr) {
+    if (!timeStr) return null;
+    try {
+        const d = new Date(timeStr);
+        if (!isNaN(d)) return d;
+        const m = timeStr.match(/(\d+)\.\s*(\d+)\.\s*(\d+)\s+(\d+):(\d+):(\d+)/);
+        if (m) return new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5], +m[6]);
+    } catch(e) {}
+    return null;
+}
+
 document.getElementById('postBtn').onclick = async () => {
     const text   = document.getElementById('gossipInput').value.trim();
     const person = document.getElementById('personInput').value.trim();
@@ -451,61 +465,52 @@ document.getElementById('postBtn').onclick = async () => {
     location.reload();
 };
 
-// =============================================
-// LIKE, SCHVÁLENÍ, SMAZÁNÍ
-// =============================================
 window.likePost    = (id, cur) => update(ref(db, 'gossip/' + id), { likes: (cur || 0) + 1 });
 window.approvePost = (id)      => update(ref(db, 'gossip/' + id), { approved: true });
 window.deletePost  = (id)      => confirm("Smazat?") && remove(ref(db, 'gossip/' + id));
 
-// =============================================
-// NAČÍTÁNÍ DAT Z FIREBASE & VYKRESLENÍ
-// =============================================
 onValue(gossipRef, (snapshot) => {
     const data = snapshot.val() || {};
     const feed       = document.getElementById('gossipFeed');
+    const recentDiv  = document.getElementById('recentFeed');
     const rankingDiv = document.getElementById('rankingList');
     const adminDiv   = document.getElementById('adminApproveList');
 
-    feed.innerHTML     = "";
-    adminDiv.innerHTML = "<h3 style='margin:20px 0 10px; font-family:Bebas Neue; color:var(--accent)'>Waiting for approval.:</h3>";
+    feed.innerHTML      = "";
+    recentDiv.innerHTML = "";
+    adminDiv.innerHTML  = "<h3 style='margin:20px 0 10px; font-family:Bebas Neue; color:var(--accent)'>Waiting for approval.:</h3>";
 
-    // =============================================
-    // POČÍTÁNÍ ZMÍNEK PRO RANKING
-    // =============================================
     const mentionCount = {};
     RANKED_PEOPLE.forEach(n => { mentionCount[n.toLowerCase()] = 0; });
 
+    const now   = Date.now();
+    const ms24h = 24 * 60 * 60 * 1000;
+    let recentCount = 0;
+
     Object.entries(data).reverse().forEach(([id, item]) => {
         const personText = (item.person || "").toLowerCase();
-        const likes      = item.likes || 0;
 
         if (item.approved) {
-
             RANKED_PEOPLE.forEach(name => {
                 if (personText.includes(name.toLowerCase())) {
                     mentionCount[name.toLowerCase()]++;
                 }
             });
 
-            // --- FEED ---
-            feed.innerHTML += `
-                <div class="card">
-                    <div class="person">${item.person}</div>
-                    <div style="line-height:1.5">${item.text}</div>
-                    ${item.image ? `<img src="${item.image}" class="gossip-img" loading="lazy">` : ""}
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                        <button class="post-btn" style="padding:5px 15px; font-size:14px;" onclick="likePost('${id}', ${likes})">
-                            ${likes} likes
-                        </button>
-                        ${isAdmin ? `<button onclick="deletePost('${id}')" style="background:none; border:none; color:#555; cursor:pointer; font-size:14px; font-family:'Bebas Neue'">DELETE</button>` : ""}
-                    </div>
-                </div>`;
+            // GOSSIPS — všechny schválené, DELETE jen admin
+            feed.innerHTML += buildCard(id, item, isAdmin);
+
+            // FEED — jen posledních 24h
+            const postTime = parseTime(item.time);
+            if (postTime && (now - postTime.getTime()) < ms24h) {
+                recentDiv.innerHTML += buildCard(id, item, isAdmin);
+                recentCount++;
+            }
 
         } else if (isAdmin) {
-            // --- ADMIN: KE SCHVÁLENÍ ---
             adminDiv.innerHTML += `
                 <div class="card" style="border-color: var(--accent)">
+                    ${item.time ? `<div class="post-time">${item.time}</div>` : ''}
                     <b>${item.person}</b>: ${item.text}
                     ${item.image ? `<img src="${item.image}" class="gossip-img">` : ""}
                     <div style="margin-top:10px; display:flex; gap:10px;">
@@ -516,18 +521,22 @@ onValue(gossipRef, (snapshot) => {
         }
     });
 
-    // =============================================
-    // VYKRESLENÍ RANKINGU
-    // =============================================
+    if (recentCount === 0) {
+        recentDiv.innerHTML = `<div class="empty-state">No gossips in the last 24 hours 🤫</div>`;
+    }
+    if (feed.innerHTML === "") {
+        feed.innerHTML = `<div class="empty-state">No gossips yet</div>`;
+    }
+
+    // RANKING
     const sorted = RANKED_PEOPLE
         .map(name => [name, mentionCount[name.toLowerCase()] || 0])
         .sort((a, b) => b[1] - a[1]);
 
     rankingDiv.innerHTML = sorted.map(([name, count], i) => {
-        const rankClass = i < 3 ? `rank-${i + 1}` : '';
         const countText = count === 1 ? '1 zminka' : `${count} zminek`;
         return `
-        <div class="rank-item ${rankClass}">
+        <div class="rank-item">
             <div style="display:flex; align-items:center; gap:8px;">
                 <span class="rank-position">${i + 1}</span>
                 <div style="font-weight:bold;">${name}</div>
