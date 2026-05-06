@@ -259,6 +259,11 @@ async function loadData() {
     const now = new Date();
 
     gossips.forEach(item => {
+        // Tlačítko SMAZAT se vygeneruje pouze pokud je isAdmin = true
+        const deleteButtonHtml = isAdmin 
+            ? `<button onclick="deletePost('${item.id}')" style="color:var(--accent); background:none; border:none; font-family:'Bebas Neue'; cursor:pointer; font-size:14px;">SMAZAT</button>` 
+            : '';
+
         const cardHtml = `
             <div class="card">
                 <div class="person">${item.person}</div>
@@ -270,7 +275,7 @@ async function loadData() {
                             onclick="likePost('${item.id}', ${item.likes})">
                         ${item.likes} LIKES
                     </button>
-                    ${isAdmin ? `<button onclick="deletePost('${item.id}')" style="color:red; background:none; border:none; font-family:'Bebas Neue'">Smazat</button>` : ''}
+                    ${deleteButtonHtml}
                 </div>
             </div>
         `;
@@ -285,7 +290,7 @@ async function loadData() {
                 recent.innerHTML += cardHtml;
             }
        } else {
-            // Tady jsem přidal zobrazení fotky pro admina ke schválení
+            // Sekce ke schválení (viditelná jen v Admin sekci)
             adminList.innerHTML += `
                 <div class="card" style="border: 2px solid orange">
                     <div class="person">${item.person}</div>
@@ -293,7 +298,7 @@ async function loadData() {
                     ${item.image_url ? `<img src="${item.image_url}" class="gossip-img">` : ''}
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button class="post-btn" style="background:var(--accent-good)" onclick="approvePost('${item.id}')">SCHVÁLIT</button>
-                        <button class="post-btn" onclick="deletePost('${item.id}')">ZAMÍTNOUT</button>
+                        <button class="post-btn" onclick="deletePost('${item.id}')">SMAZAT / ZAMÍTNOUT</button>
                     </div>
                 </div>
             `;
@@ -317,14 +322,25 @@ async function likePost(id, currentLikes) {
 }
 
 async function approvePost(id) {
+    if (!isAdmin) return;
     await _supabase.from('gossips').update({ approved: true }).eq('id', id);
     loadData();
 }
 
+// Tato funkce nyní kontroluje isAdmin a provede smazání v databázi
 async function deletePost(id) {
-    if (confirm("Opravdu smazat?")) {
-        await _supabase.from('gossips').delete().eq('id', id);
-        loadData();
+    if (!isAdmin) {
+        alert("Na tuhle akci nemáš oprávnění.");
+        return;
+    }
+
+    if (confirm("Opravdu smazat příspěvek navždy?")) {
+        const { error } = await _supabase.from('gossips').delete().eq('id', id);
+        if (error) {
+            alert("Chyba při mazání: " + error.message);
+        } else {
+            loadData(); // Okamžitě překreslí feed bez smazaného postu
+        }
     }
 }
 
