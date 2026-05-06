@@ -190,6 +190,8 @@ function showSection(id) {
         document.getElementById('inputArea').classList.remove('open');
         plusBtn.innerText = '+';
     }
+    
+    loadData();
 }
 
 function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
@@ -284,7 +286,7 @@ async function loadData() {
             if ((now - new Date(item.created_at)) < 24 * 60 * 60 * 1000) {
                 recent.innerHTML += cardHtml;
             }
-        } else if (isAdmin) {
+       } else if (isAdmin && document.getElementById('admin').classList.contains('active')) {
             // Pouze pro admina a pouze v sekci Admin (skrze JS logiku výše)
             adminList.innerHTML += `
                 <div class="card" style="border-color:orange">
