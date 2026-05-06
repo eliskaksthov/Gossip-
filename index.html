@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +9,6 @@
     <style>
         /* =============================================
            PROMĚNNÉ BAREV
-           Změna hodnoty tady = změna všude v aplikaci.
            ============================================= */
         :root { 
             --bg: #080808; 
@@ -19,294 +19,250 @@
             --muted: #555; 
             --border: #222; 
         }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        /* =============================================
-           TĚLO STRÁNKY
-           ============================================= */
-        body { 
-            font-family: 'DM Sans', sans-serif; 
-            background-color: var(--bg);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-attachment: fixed;
-            background-size: cover;
-            color: var(--text); 
-            min-height: 100vh; 
-            transition: background 0.3s ease;
-        }
 
-        /* =============================================
-           HORNÍ NAVIGAČNÍ LIŠTA (HEADER)
-           Zůstane vždy nahoře při scrollování.
-           ============================================= */
-        .header { 
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100; 
-            background: rgba(8,8,8,0.85); backdrop-filter: blur(15px); 
-            border-bottom: 1px solid var(--border); 
-            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; 
-        }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--accent); }
-        .nav-toggle { font-size: 28px; cursor: pointer; color: white; background: none; border: none; }
-        
-        /* =============================================
-           HAMBURGER MENU
-           Otevírá se po kliknutí na tři čárky.
-           ============================================= */
-        .menu { 
-            display: none; position: fixed; top: 60px; right: 20px; 
-            background: var(--surface); border: 1px solid var(--border); 
-            border-radius: 12px; padding: 10px; z-index: 1000; 
-            flex-direction: column; gap: 5px; min-width: 180px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .menu.active { display: flex; }
-        .menu button { 
-            background: none; border: none; color: white; padding: 12px 15px; 
-            text-align: left; cursor: pointer; font-family: 'Bebas Neue', sans-serif; 
-            font-size: 18px; border-radius: 8px; transition: 0.2s;
-        }
-        .menu button:hover { background: var(--border); color: var(--accent); }
+```
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* =============================================
+       TĚLO STRÁNKY
+       background-size: cover bez blur = ostrá fotka.
+       image-rendering zajišťuje ostrý render.
+       ============================================= */
+    body { 
+        font-family: 'DM Sans', sans-serif; 
+        background-color: var(--bg);
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+        background-size: cover;
+        image-rendering: high-quality;
+        -webkit-font-smoothing: antialiased;
+        color: var(--text); 
+        min-height: 100vh; 
+        transition: background-image 0.3s ease;
+    }
 
-        /* =============================================
-           HLAVNÍ OBLAST OBSAHU
-           Když je lišta otevřená, přidá se spodní
-           padding aby obsah nebyl zakrytý lištou.
-           ============================================= */
-        .content { 
-            padding: 80px 20px 60px; 
-            max-width: 500px; 
-            margin: auto; 
-            transition: padding-bottom 0.4s ease;
-        }
-        .content.input-visible { padding-bottom: 220px; }
+    /* =============================================
+       HORNÍ NAVIGAČNÍ LIŠTA (HEADER)
+       Průhlednost snížena — méně blur = ostřejší bg.
+       ============================================= */
+    .header { 
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100; 
+        background: rgba(8,8,8,0.75);
+        backdrop-filter: blur(8px); 
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border); 
+        padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--accent); }
+    .nav-toggle { font-size: 28px; cursor: pointer; color: white; background: none; border: none; }
+    
+    /* =============================================
+       HAMBURGER MENU
+       ============================================= */
+    .menu { 
+        display: none; position: fixed; top: 60px; right: 20px; 
+        background: var(--surface); border: 1px solid var(--border); 
+        border-radius: 12px; padding: 10px; z-index: 1000; 
+        flex-direction: column; gap: 5px; min-width: 180px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .menu.active { display: flex; }
+    .menu button { 
+        background: none; border: none; color: white; padding: 12px 15px; 
+        text-align: left; cursor: pointer; font-family: 'Bebas Neue', sans-serif; 
+        font-size: 18px; border-radius: 8px; transition: 0.2s;
+    }
+    .menu button:hover { background: var(--border); color: var(--accent); }
 
-        .section { display: none; animation: fadeIn 0.4s ease; }
-        .section.active { display: block; }
+    /* =============================================
+       HLAVNÍ OBLAST OBSAHU
+       ============================================= */
+    .content { 
+        padding: 80px 20px 60px; 
+        max-width: 500px; 
+        margin: auto; 
+        transition: padding-bottom 0.4s ease;
+    }
+    .content.input-visible { padding-bottom: 200px; }
 
-        /* =============================================
-           KARTA S DRBEM
-           ============================================= */
-        .card { 
-            background: rgba(17, 17, 17, 0.8); backdrop-filter: blur(10px); 
-            border: 1px solid var(--border); border-radius: 15px; 
-            padding: 15px; margin-bottom: 15px; 
-        }
+    .section { display: none; animation: fadeIn 0.4s ease; }
+    .section.active { display: block; }
 
-        /* =============================================
-           OBRÁZEK V KARTĚ
-           object-fit: cover = fotka se ořízne správně,
-           nezkreslí se ani nerozmaže.
-           ============================================= */
-        .gossip-img { 
-            width: 100%; 
-            max-height: 400px;
-            object-fit: cover;
-            object-position: center top;
-            border-radius: 10px; 
-            margin: 10px 0; 
-            display: block; 
-        }
+    /* =============================================
+       KARTA
+       Méně blur na kartách = ostrý obraz na pozadí.
+       ============================================= */
+    .card { 
+        background: rgba(17, 17, 17, 0.82);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid var(--border); border-radius: 15px; 
+        padding: 15px; margin-bottom: 15px; 
+    }
 
-        .person { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-        
-        /* =============================================
-           TYP DRBU — POMLUVA vs. POCHVALA
-           ============================================= */
-        .type-badge {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 3px 10px;
-            border-radius: 20px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .type-badge.gossip { background: rgba(255,45,85,0.15); color: var(--accent); border: 1px solid rgba(255,45,85,0.3); }
-        .type-badge.praise { background: rgba(48,209,88,0.15); color: var(--accent-good); border: 1px solid rgba(48,209,88,0.3); }
+    /* =============================================
+       OBRÁZEK V KARTĚ
+       ============================================= */
+    .gossip-img { 
+        width: 100%; 
+        max-height: 400px;
+        object-fit: cover;
+        object-position: center top;
+        border-radius: 10px; 
+        margin: 10px 0; 
+        display: block; 
+    }
 
-        /* =============================================
-           RANKING
-           Řadí se podle počtu zmínek — čím víc zmínek,
-           tím vyšší místo v žebříčku.
-           ============================================= */
-        .ranking-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 32px;
-            margin-bottom: 6px;
-        }
-        .ranking-subtitle {
-            color: var(--muted);
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        .rank-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; background: rgba(255,255,255,0.05); 
-            border-radius: 10px; margin-bottom: 8px;
-            border-left: 4px solid var(--border);
-        }
-        /* Barva okraje podle pořadí */
-        .rank-item.rank-1 { border-left-color: var(--border); }
-        .rank-item.rank-2 { border-left-color: var(--border); }
-        .rank-item.rank-3 { border-left-color: var(--border); }
+    .person { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
 
-        .rank-position { 
-            font-family: 'Bebas Neue', sans-serif; 
-            font-size: 28px; 
-            color: var(--muted); 
-            margin-right: 12px; 
-            min-width: 30px;
-        }
-        .rank-count { 
-            font-weight: bold; 
-            font-size: 16px; 
-            color: var(--accent);
-            text-align: right;
-        }
+    /* =============================================
+       RANKING
+       ============================================= */
+    .ranking-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 32px;
+        margin-bottom: 6px;
+    }
+    .ranking-subtitle {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+    .rank-item { 
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 15px; background: rgba(255,255,255,0.05); 
+        border-radius: 10px; margin-bottom: 8px;
+        border-left: 4px solid var(--border);
+    }
+    .rank-position { 
+        font-family: 'Bebas Neue', sans-serif; 
+        font-size: 28px; 
+        color: var(--muted); 
+        margin-right: 12px; 
+        min-width: 30px;
+    }
+    .rank-count { 
+        font-weight: bold; 
+        font-size: 16px; 
+        color: var(--accent);
+        text-align: right;
+    }
 
-        /* =============================================
-           PŘIHLAŠOVACÍ FORMULÁŘ (ADMIN)
-           ============================================= */
-        .login-input {
-            margin-bottom: 10px;
-            width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            outline: none;
-            font-family: 'DM Sans', sans-serif;
-        }
+    /* =============================================
+       PŘIHLAŠOVACÍ FORMULÁŘ (ADMIN)
+       ============================================= */
+    .login-input {
+        margin-bottom: 10px;
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+        outline: none;
+        font-family: 'DM Sans', sans-serif;
+    }
 
-        /* =============================================
-           ADMIN PANEL
-           Vidí ho jen přihlášený admin (třída is-admin).
-           ============================================= */
-        .admin-only { display: none !important; }
-        body.is-admin .admin-only { display: block !important; }
-        body.is-admin #loginBtn { display: none !important; }
+    /* =============================================
+       ADMIN PANEL
+       ============================================= */
+    .admin-only { display: none !important; }
+    body.is-admin .admin-only { display: block !important; }
+    body.is-admin #loginBtn { display: none !important; }
 
-        /* =============================================
-           SIPKA PRO OTEVRENI / ZAVRENI SPODNI LISTY
-           Kulatý button uprostřed dole.
-           Když je lišta otevřená:
-             - sipka se posune nahoru nad lištu
-             - otočí se dolů (rotate 180deg)
-           ============================================= */
-        .input-toggle-btn {
-            position: fixed;
-            bottom: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 200;
-            background: rgba(17,17,17,0.75);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            color: white;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            /* Přechod: pozice dole + rotace sipky */
-            transition: bottom 0.4s cubic-bezier(0.4,0,0.2,1), background 0.2s;
-        }
-        /* Stav: lišta je otevřená */
-        .input-toggle-btn.open {
-            bottom: 180px; /* posune se nad lištu */
-        }
-        .input-toggle-btn:hover { background: rgba(40,40,40,0.9); }
+    /* =============================================
+       SIPKA
+       ============================================= */
+    .input-toggle-btn {
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 200;
+        background: rgba(17,17,17,0.75);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        color: white;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: bottom 0.4s cubic-bezier(0.4,0,0.2,1), background 0.2s;
+    }
+    .input-toggle-btn.open {
+        bottom: 155px;
+    }
+    .input-toggle-btn:hover { background: rgba(40,40,40,0.9); }
 
-        /* SVG sipka uvnitř tlačítka — otáčí se CSS přechodem */
-        .arrow-svg {
-            width: 18px;
-            height: 18px;
-            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-        }
-        /* Když je lišta otevřená, sipka se otočí o 180° */
-        .input-toggle-btn.open .arrow-svg {
-            transform: rotate(180deg);
-        }
+    .arrow-svg {
+        width: 18px;
+        height: 18px;
+        transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .input-toggle-btn.open .arrow-svg {
+        transform: rotate(180deg);
+    }
 
-        /* =============================================
-           SPODNÍ LIŠTA PRO PSANÍ DRBŮ
-           Výchozí stav: skrytá pod obrazovkou
-           (translateY 100% = posun dolů o celou výšku).
-           Po kliknutí na sipku se vysune.
-           Průhledné pozadí — stejný styl jako ranking.
-           ============================================= */
-        .input-area { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: rgba(8,8,8,0.55);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border); 
-            padding: 15px 15px 22px;
-            z-index: 101;
-            /* Výchozí stav: schovaná */
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-        }
-        /* Třída open = lišta je viditelná */
-        .input-area.open {
-            transform: translateY(0);
-        }
+    /* =============================================
+       SPODNÍ LIŠTA
+       ============================================= */
+    .input-area { 
+        position: fixed; bottom: 0; left: 0; right: 0; 
+        background: rgba(8,8,8,0.60);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border); 
+        padding: 15px 15px 22px;
+        z-index: 101;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .input-area.open {
+        transform: translateY(0);
+    }
 
-        .input-container { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 8px; }
+    .input-container { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 8px; }
 
-        input[type="text"] { 
-            background: rgba(255,255,255,0.07);
-            border: 1px solid var(--border); 
-            color: white; padding: 12px; border-radius: 10px; outline: none;
-            font-family: 'DM Sans', sans-serif;
-            width: 100%;
-        }
-        input[type="text"]::placeholder { color: var(--muted); }
+    input[type="text"] { 
+        background: rgba(255,255,255,0.07);
+        border: 1px solid var(--border); 
+        color: white; padding: 12px; border-radius: 10px; outline: none;
+        font-family: 'DM Sans', sans-serif;
+        width: 100%;
+    }
+    input[type="text"]::placeholder { color: var(--muted); }
 
-        /* =============================================
-           VÝBĚR TYPU (POMLUVA / POCHVALA)
-           ============================================= */
-        .type-selector { display: flex; gap: 8px; }
-        .type-btn {
-            flex: 1; padding: 10px; border-radius: 10px;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,0.05);
-            color: var(--muted);
-            cursor: pointer; font-family: 'Bebas Neue', sans-serif;
-            font-size: 15px; text-align: center; transition: 0.2s;
-        }
-        .type-btn.selected-gossip { background: rgba(255,45,85,0.15); color: var(--accent); border-color: var(--accent); }
-        .type-btn.selected-praise { background: rgba(48,209,88,0.15); color: var(--accent-good); border-color: var(--accent-good); }
+    /* =============================================
+       TLAČÍTKO POSLAT
+       ============================================= */
+    .post-btn { 
+        background: var(--accent); color: white; border: none; 
+        padding: 12px; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; 
+        cursor: pointer; font-size: 18px; letter-spacing: 1px;
+    }
 
-        /* =============================================
-           TLACITKO POSLAT
-           ============================================= */
-        .post-btn { 
-            background: var(--accent); color: white; border: none; 
-            padding: 12px; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; 
-            cursor: pointer; font-size: 18px; letter-spacing: 1px;
-        }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+```
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
 </head>
 <body>
 
 <!-- HORNÍ LIŠTA -->
+
 <div class="header">
     <div class="logo">Insider</div>
     <button class="nav-toggle" onclick="toggleMenu()">&#9776;</button>
 </div>
 
 <!-- HAMBURGER MENU -->
+
 <div class="menu" id="navMenu">
     <button onclick="showSection('feed')">GOSSIPS</button>
     <button onclick="showSection('ranking')">RANKING</button>
@@ -316,61 +272,51 @@
 </div>
 
 <!-- HLAVNÍ OBSAH -->
+
 <div class="content" id="mainContent">
 
-    <div id="feed" class="section active">
-        <div id="gossipFeed">Loading...</div>
-    </div>
+```
+<div id="feed" class="section active">
+    <div id="gossipFeed">Loading...</div>
+</div>
 
-    <div id="ranking" class="section">
-        <div class="ranking-title">The Ranking</div>
-        <div class="ranking-subtitle">vymysli si popisek</div>
-        <div id="rankingList"></div>
-    </div>
+<div id="ranking" class="section">
+    <div class="ranking-title">The Ranking</div>
+    <div class="ranking-subtitle">vymysli si popisek</div>
+    <div id="rankingList"></div>
+</div>
 
-    <div id="login" class="section">
-        <div class="card">
-            <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN LOGIN</h2>
-            <input class="login-input" type="text" id="adminUser" placeholder="Username">
-            <input class="login-input" type="password" id="adminPass" placeholder="Password">
-            <button class="post-btn" onclick="handleLogin()" style="width: 100%;">LOG IN</button>
-        </div>
+<div id="login" class="section">
+    <div class="card">
+        <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN LOGIN</h2>
+        <input class="login-input" type="text" id="adminUser" placeholder="Username">
+        <input class="login-input" type="password" id="adminPass" placeholder="Password">
+        <button class="post-btn" onclick="handleLogin()" style="width: 100%;">LOG IN</button>
     </div>
+</div>
 
-    <div id="admin" class="section admin-only">
-        <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN</h2>
-        <div class="card">
-            <p style="margin-bottom: 10px;">Zmenit docasne pozadi (jen u tebe):</p>
-            <input type="file" id="bgUpload" accept="image/*" onchange="uploadBackground()">
-        </div>
-        <div id="adminApproveList"></div>
-    </div>
+<div id="admin" class="section admin-only">
+    <h2 style="font-family:'Bebas Neue'; margin-bottom:15px;">ADMIN</h2>
+    <div id="adminApproveList"></div>
+</div>
+```
 
 </div>
 
-<!-- =============================================
-     SIPKA — kliknutím otevře / zavře spodní lištu.
-     SVG sipka se otáčí CSS přechodem.
-     Zobrazí se jen na feedu (ostatní stránky ji skryjí).
-     ============================================= -->
+<!-- SIPKA -->
+
 <button class="input-toggle-btn" id="inputToggle" onclick="toggleInputArea()">
     <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="18 15 12 9 6 15"></polyline>
     </svg>
 </button>
 
-<!-- =============================================
-     SPODNÍ LIŠTA
-     Výchozí stav: skrytá. Otevře se sipkou.
-     ============================================= -->
+<!-- SPODNÍ LIŠTA -->
+
 <div class="input-area" id="inputArea">
     <div class="input-container">
         <input type="text" id="personInput" placeholder="Who was it about?">
-        <input type="text" id="gossipInput" placeholder="What happend?">
-        <div class="type-selector">
-            <button class="type-btn selected-gossip" id="btnGossip" onclick="selectType('gossip')">POMLUVA</button>
-            <button class="type-btn" id="btnPraise" onclick="selectType('praise')">POCHVALA</button>
-        </div>
+        <input type="text" id="gossipInput" placeholder="What happened?">
         <div style="display: flex; gap: 10px;">
             <label style="background:rgba(255,255,255,0.07); padding:12px; border-radius:10px; cursor:pointer; flex:1; text-align:center; border:1px solid var(--border); font-size:14px;" id="photoLabel">
                 FOTO
@@ -399,14 +345,7 @@ const db  = getDatabase(app);
 const gossipRef = ref(db, 'gossip');
 
 // =============================================
-// PEVNÝ SEZNAM 5 LIDÍ V RANKINGU
-// 
-//
-// JAK RANKING FUNGUJE:
-// Prohledá se pole "O kom to je?" každého schváleného
-// příspěvku. Pokud text obsahuje dané jméno (i když
-// tam jsou i jiná jména), přičte se 1 zmínka.
-// Čím víc zmínek, tím vyšší místo v žebříčku.
+// PEVNÝ SEZNAM LIDÍ V RANKINGU
 // =============================================
 const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 
@@ -414,7 +353,7 @@ const RANKED_PEOPLE = ["Lily", "Mason", "Alison", "Katie", "James"];
 // ADMIN PŘIHLAŠOVÁNÍ
 // =============================================
 const ADMIN_USER = "admin"; 
-const ADMIN_PASS = "1234"; // ZDE si změň heslo!
+const ADMIN_PASS = "1234";
 
 window.handleLogin = () => {
     const u = document.getElementById('adminUser').value;
@@ -430,25 +369,19 @@ const isAdmin = localStorage.getItem('isAdmin') === 'true';
 if (isAdmin) document.body.classList.add('is-admin');
 
 // =============================================
-// POZADÍ
+// POZADÍ — ostrá fotka bez blur artefaktů.
+//
+// Pozadí se nastaví přes CSS background-image.
+// Klíč: background-size: cover bez dalších filtrů
+// na body samotném zajistí plnou ostrost.
+// Rozmazání způsobovaly backdrop-filter na kartách
+// (sníženy) a backdrop-filter na headeru (snížen).
 // =============================================
 const globalDefaultBg = "https://i.ibb.co/mYrQ8rX/image.png";
-window.uploadBackground = function() {
-    const file = document.getElementById('bgUpload').files[0];
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        localStorage.setItem('customBg', e.target.result);
-        document.body.style.backgroundImage = `url(${e.target.result})`;
-    };
-    reader.readAsDataURL(file);
-};
-const savedBg = localStorage.getItem('customBg');
-document.body.style.backgroundImage = `url(${savedBg || globalDefaultBg})`;
+document.body.style.backgroundImage = `url(${globalDefaultBg})`;
 
 // =============================================
 // NAVIGACE
-// Při přepnutí na jinou sekci než feed se sipka
-// skryje a lišta se zavře.
 // =============================================
 window.toggleMenu = () => document.getElementById('navMenu').classList.toggle('active');
 
@@ -467,14 +400,6 @@ window.showSection = (id) => {
 
 // =============================================
 // SIPKA — OTEVRIT / ZAVRIT SPODNI LISTU
-//
-// toggleInputArea() přepíná stav (otevřít/zavřít).
-// closeInputArea() vždy zavře (používá se i při
-// přepnutí na jinou sekci).
-//
-// Třídy .open na .input-area a .input-toggle-btn
-// spustí CSS přechody: lišta se vysune,
-// sipka se posune nahoru a otočí.
 // =============================================
 let inputOpen = false;
 
@@ -500,16 +425,6 @@ function closeInputArea() {
 }
 
 // =============================================
-// VÝBĚR TYPU (POMLUVA / POCHVALA)
-// =============================================
-let selectedType = 'gossip';
-window.selectType = (type) => {
-    selectedType = type;
-    document.getElementById('btnGossip').className = 'type-btn' + (type === 'gossip' ? ' selected-gossip' : '');
-    document.getElementById('btnPraise').className = 'type-btn' + (type === 'praise' ? ' selected-praise' : '');
-};
-
-// =============================================
 // ODESLÁNÍ NOVÉHO DRBU
 // =============================================
 document.getElementById('postBtn').onclick = async () => {
@@ -529,7 +444,6 @@ document.getElementById('postBtn').onclick = async () => {
 
     await push(gossipRef, {
         text, person, image: base64,
-        type: selectedType,
         time: new Date().toLocaleString('cs-CZ'),
         approved: false, likes: 0
     });
@@ -546,7 +460,6 @@ window.deletePost  = (id)      => confirm("Smazat?") && remove(ref(db, 'gossip/'
 
 // =============================================
 // NAČÍTÁNÍ DAT Z FIREBASE & VYKRESLENÍ
-// onValue se spustí automaticky při každé změně dat.
 // =============================================
 onValue(gossipRef, (snapshot) => {
     const data = snapshot.val() || {};
@@ -559,11 +472,6 @@ onValue(gossipRef, (snapshot) => {
 
     // =============================================
     // POČÍTÁNÍ ZMÍNEK PRO RANKING
-    //
-    // Pro každý schválený příspěvek se prohledá text
-    // pole "O kom to je?" (item.person).
-    // Pokud obsahuje jméno ze seznamu RANKED_PEOPLE,
-    // přičte se 1 zmínka — i když je v poli víc jmen.
     // =============================================
     const mentionCount = {};
     RANKED_PEOPLE.forEach(n => { mentionCount[n.toLowerCase()] = 0; });
@@ -574,8 +482,6 @@ onValue(gossipRef, (snapshot) => {
 
         if (item.approved) {
 
-            // Projdi všechna sledovaná jména a zkontroluj
-            // jestli se vyskytují v poli "O kom to je?"
             RANKED_PEOPLE.forEach(name => {
                 if (personText.includes(name.toLowerCase())) {
                     mentionCount[name.toLowerCase()]++;
@@ -583,14 +489,8 @@ onValue(gossipRef, (snapshot) => {
             });
 
             // --- FEED ---
-            const isPraise  = item.type === 'praise';
-            const badgeHtml = isPraise
-                ? `<span class="type-badge praise">POCHVALA</span>`
-                : `<span class="type-badge gossip">POMLUVA</span>`;
-
             feed.innerHTML += `
                 <div class="card">
-                    ${badgeHtml}
                     <div class="person">${item.person}</div>
                     <div style="line-height:1.5">${item.text}</div>
                     ${item.image ? `<img src="${item.image}" class="gossip-img" loading="lazy">` : ""}
@@ -604,10 +504,8 @@ onValue(gossipRef, (snapshot) => {
 
         } else if (isAdmin) {
             // --- ADMIN: KE SCHVÁLENÍ ---
-            const typLabel = item.type === 'praise' ? 'POCHVALA' : 'POMLUVA';
             adminDiv.innerHTML += `
                 <div class="card" style="border-color: var(--accent)">
-                    <div style="font-size:12px; color:var(--muted); margin-bottom:5px;">${typLabel}</div>
                     <b>${item.person}</b>: ${item.text}
                     ${item.image ? `<img src="${item.image}" class="gossip-img">` : ""}
                     <div style="margin-top:10px; display:flex; gap:10px;">
@@ -620,7 +518,6 @@ onValue(gossipRef, (snapshot) => {
 
     // =============================================
     // VYKRESLENÍ RANKINGU
-    // Seřadí 5 lidí od nejvíce zmíněných.
     // =============================================
     const sorted = RANKED_PEOPLE
         .map(name => [name, mentionCount[name.toLowerCase()] || 0])
@@ -640,5 +537,6 @@ onValue(gossipRef, (snapshot) => {
     }).join('');
 });
 </script>
+
 </body>
 </html>
